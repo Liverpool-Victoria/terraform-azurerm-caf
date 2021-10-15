@@ -277,6 +277,10 @@ variable "cosmos_dbs" {
   default = {}
 }
 
+variable "cosmosdb_sql_databases" {
+  default = {}
+}
+
 variable "app_config" {
   default = {}
 }
