@@ -3,6 +3,7 @@ private_endpoints = {
     # lz_key = ""  # Landingzone key when deployed in remote landing zone
     vnet_key    = "vnet_01"
     subnet_keys = ["subnet_01"]
+    # resource_group_key = "" # Key of resource group of the vnet
 
     storage_accounts = {
       level0 = {
@@ -21,8 +22,21 @@ private_endpoints = {
           zone_group_name = "default"
           # lz_key          = ""   # If the DNS keys are deployed in a remote landingzone
           keys = ["dns1"]
+          # ids = []    # List of DNS resource ids
         }
       }
+      # level1custom = {
+      #   resource_id = "" # Using the created resource id if resource are created outside of CAF
+      #
+      #   private_service_connection = {
+      #     name        = ""
+      #   }
+      #   private_dns = {
+      #     zone_group_name = "default"
+      #     # lz_key          = ""   # If the DNS keys are deployed in a remote landingzone
+      #     keys = ["dns1"]
+      #   }
+      # }
     }
 
     # Diagnostics objects are global and inherit from base core landing zones
@@ -117,6 +131,32 @@ private_endpoints = {
       sales-re1 = {
         private_service_connection = {
           name = "psc-myssql-sales-re1"
+        }
+
+        private_dns = {
+          zone_group_name = "default"
+          keys            = ["dns1"]
+        }
+      }
+    }
+
+    redis_caches = {
+      sales_rc1 = {
+        private_service_connection = {
+          name = "psc-redis-sales-rc1"
+        }
+
+        private_dns = {
+          zone_group_name = "default"
+          keys            = ["dns1"]
+        }
+      }
+    }
+
+    azure_container_registries = {
+      acr1 = {
+        private_service_connection = {
+          name = "psc-acr-sales-acr1"
         }
 
         private_dns = {

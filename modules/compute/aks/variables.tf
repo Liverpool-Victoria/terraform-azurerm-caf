@@ -15,3 +15,12 @@ variable "base_tags" {
 variable "diagnostic_profiles" {
   default = null
 }
+variable "private_dns_zone_id" {
+  default = null
+}
+variable "managed_identities" {
+  default = {}
+}
+variable "application_gateway" {
+  default = {}
+}

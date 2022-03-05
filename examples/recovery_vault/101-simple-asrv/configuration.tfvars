@@ -1,7 +1,7 @@
 global_settings = {
   regions = {
-    region1 = "southeastasia"
-    region2 = "eastasia"
+    region1 = "eastus2"
+    region2 = "centralus"
   }
 }
 resource_groups = {
@@ -31,10 +31,11 @@ recovery_vaults = {
     backup_policies = {
       vms = {
         policy1 = {
-          name      = "VMBackupPolicy1"
-          vault_key = "asr1"
-          rg_key    = "primary"
-          timezone  = "UTC"
+          name                           = "VMBackupPolicy1"
+          vault_key                      = "asr1"
+          rg_key                         = "primary"
+          timezone                       = "UTC"
+          instant_restore_retention_days = 5
           backup = {
             frequency = "Daily"
             time      = "23:00"

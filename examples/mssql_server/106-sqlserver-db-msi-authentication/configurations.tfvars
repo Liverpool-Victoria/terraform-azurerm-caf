@@ -1,7 +1,7 @@
 global_settings = {
   default_region = "region1"
   regions = {
-    region1 = "southeastasia"
+    region1 = "eastus2"
   }
 }
 
@@ -21,9 +21,6 @@ keyvaults = {
 
     creation_policies = {
       logged_in_user = {
-        secret_permissions = ["Set", "Get", "List", "Delete", "Purge"]
-      }
-      logged_in_aad_app = {
         secret_permissions = ["Set", "Get", "List", "Delete", "Purge"]
       }
     }
@@ -47,7 +44,7 @@ azuread_groups = {
       user_principal_names = []
 
       # NOTE: To ensure DB users can be created, sqlserver admin needs to add the rover agent's system assigned identity object ID added
-      # NOTE: since the authentication uses SQLCMD + DSN, UID cannot be supplied to the connection string, thus only system assigned identity is possible at this stage.      
+      # NOTE: since the authentication uses SQLCMD + DSN, UID cannot be supplied to the connection string, thus only system assigned identity is possible at this stage.
       object_ids = [
         # Add object id of rover agent with system assigned identity here.
       ]

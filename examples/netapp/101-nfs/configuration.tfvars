@@ -2,7 +2,7 @@
 global_settings = {
   default_region = "region1"
   regions = {
-    region1 = "southeastasia"
+    region1 = "eastus2"
   }
 }
 
@@ -39,7 +39,6 @@ netapp_accounts = {
             # Minimum 100
             storage_quota_in_gb = "100"
             # To be defined
-            #export_policy_rule = {}
             tags = {
               volume = "volume 1"
             }

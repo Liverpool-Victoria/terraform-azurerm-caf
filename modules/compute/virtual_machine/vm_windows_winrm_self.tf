@@ -5,9 +5,10 @@ resource "azurerm_key_vault_certificate" "self_signed_winrm" {
     if try(value.winrm.enable_self_signed, false) == true
   }
 
-  name         = format("%s-winrm-cert", azurecaf_name.windows[each.key].result)
+  name         = try(format("%s-winrm-cert", azurecaf_name.windows[each.key].result), format("%s-winrm-cert", azurecaf_name.legacy[each.key].result))
   key_vault_id = local.keyvault.id
-  tags         = try(merge(var.base_tags, try(each.value.tags, null)), null)
+  # Disabled inherited tags as it may have exceed limit of 15 tags on cert that gives badparameter error
+  tags = try(each.value.cert_tags, null)
 
   certificate_policy {
     issuer_parameters {
@@ -45,7 +46,7 @@ resource "azurerm_key_vault_certificate" "self_signed_winrm" {
         "keyEncipherment",
       ]
 
-      subject            = format("CN=%s", azurecaf_name.windows[each.key].result)
+      subject            = try(format("CN=%s", azurecaf_name.windows[each.key].result), format("CN=%s", azurecaf_name.legacy[each.key].result))
       validity_in_months = 12
 
       subject_alternative_names {

@@ -53,6 +53,10 @@ variable "virtual_wans" {
   default = {}
 }
 
+variable "virtual_hubs" {
+  default = {}
+}
+
 variable "virtual_networks" {
 
 }
@@ -61,6 +65,6 @@ variable "client_config" {
   default = {}
 }
 
-variable "firewall_policies" {
-  default = {}
+variable "firewall_policy_id" {
+  default = null
 }

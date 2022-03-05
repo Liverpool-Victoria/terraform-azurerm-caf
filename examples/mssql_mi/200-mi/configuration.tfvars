@@ -1,17 +1,17 @@
 global_settings = {
   default_region = "region1"
   regions = {
-    region1 = "southeastasia"
+    region1 = "eastus2"
   }
 }
 
 resource_groups = {
   networking_region1 = {
-    name   = "mi-networking-rg1"
+    name   = "mi-networking-re1"
     region = "region1"
   }
   sqlmi_region1 = {
-    name   = "sqlmi-rg1"
+    name   = "sqlmi-re1"
     region = "region1"
   }
 }
@@ -35,7 +35,8 @@ vnets = {
           actions = [
             "Microsoft.Network/virtualNetworks/subnets/join/action",
             "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action",
-          "Microsoft.Network/virtualNetworks/subnets/unprepareNetworkPolicies/action"]
+            "Microsoft.Network/virtualNetworks/subnets/unprepareNetworkPolicies/action"
+          ]
         }
       }
     }
@@ -56,14 +57,15 @@ mssql_managed_instances = {
     sku = {
       name = "GP_Gen5"
     }
-    administratorLogin         = "adminuser"
-    administratorLoginPassword = "@dm1nu53r@30102020"
+    administratorLogin = "adminuser"
+    # administratorLoginPassword = "@dm1nu53r@30102020"
 
     //networking
     networking = {
       vnet_key   = "sqlmi_region1"
       subnet_key = "sqlmi1"
     }
+    keyvault_key = "sqlmi_rg1"
 
     storageSizeInGB = 32
     vCores          = 8
@@ -118,5 +120,19 @@ mssql_mi_administrators = {
 
     # group key or upn supported
     # user_principal_name = ""
+  }
+}
+
+keyvaults = {
+  sqlmi_rg1 = {
+    name               = "sqlmirg1"
+    resource_group_key = "sqlmi_region1"
+    sku_name           = "standard"
+
+    creation_policies = {
+      logged_in_user = {
+        secret_permissions = ["Set", "Get", "List", "Delete", "Purge"]
+      }
+    }
   }
 }

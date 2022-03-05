@@ -48,6 +48,10 @@ variable "recovery_vaults" {
   default = {}
 }
 
+variable "storage_accounts" {
+  default = {}
+}
+
 variable "availability_sets" {
   default = {}
 }
@@ -72,7 +76,7 @@ variable "application_security_groups" {
 variable "virtual_machines" {
   default = {}
 }
-variable "custom_image_ids" {
+variable "image_definitions" {
   default = {}
 }
 
@@ -81,4 +85,6 @@ variable "network_security_groups" {
   description = "Require a version 1 NSG definition to be attached to a nic."
 }
 
-
+variable "dedicated_hosts" {
+  default = {}
+}

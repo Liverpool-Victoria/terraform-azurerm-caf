@@ -1,7 +1,7 @@
 global_settings = {
   default_region = "region1"
   regions = {
-    region1 = "southeastasia"
+    region1 = "eastus2"
   }
 }
 
@@ -39,6 +39,7 @@ mssql_servers = {
     resource_group_key            = "rg1"
     version                       = "12.0"
     administrator_login           = "sqladmin"
+    keyvault_key                  = "kv1"
     connection_policy             = "Default"
     public_network_access_enabled = true # true for firewall rule to be applied
     minimum_tls_version           = "1.2"
@@ -46,8 +47,9 @@ mssql_servers = {
     firewall_rules = {
       firewall_rule1 = {
         name             = "firewallrule1"
-        start_ip_address = "124.82.37.221"
-        end_ip_address   = "124.82.37.221"
+        start_ip_address = "0.0.0.0"
+        end_ip_address   = "0.0.0.0"
+        # putting it to 0.0.0.0 enables the feature: Allow access to Azure services
       }
     }
 
@@ -74,6 +76,20 @@ mssql_databases = {
     max_size_gb        = 4
     sku_name           = "BC_Gen5_2"
 
+  }
+}
+
+keyvaults = {
+  kv1 = {
+    name               = "examplekv"
+    resource_group_key = "rg1"
+    sku_name           = "standard"
+
+    creation_policies = {
+      logged_in_user = {
+        secret_permissions = ["Set", "Get", "List", "Delete", "Purge"]
+      }
+    }
   }
 }
 

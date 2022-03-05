@@ -1,7 +1,7 @@
 global_settings = {
   default_region = "region1"
   regions = {
-    region1 = "southeastasia"
+    region1 = "eastus2"
   }
 }
 
@@ -47,5 +47,19 @@ mssql_databases = {
       week_of_year      = 1     # 1 to 52
     }
 
+  }
+}
+
+keyvaults = {
+  kv1 = {
+    name               = "examplekv"
+    resource_group_key = "rg1"
+    sku_name           = "standard"
+
+    creation_policies = {
+      logged_in_user = {
+        secret_permissions = ["Set", "Get", "List", "Delete", "Purge"]
+      }
+    }
   }
 }

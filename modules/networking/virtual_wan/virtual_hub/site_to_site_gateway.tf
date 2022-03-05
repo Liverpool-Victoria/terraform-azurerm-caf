@@ -22,7 +22,8 @@ resource "azurerm_vpn_gateway" "s2s_gateway" {
   tags                = local.tags
   virtual_hub_id      = azurerm_virtual_hub.vwan_hub.id
 
-  scale_unit = var.virtual_hub_config.s2s_config.scale_unit
+  scale_unit         = var.virtual_hub_config.s2s_config.scale_unit
+  routing_preference = try(var.virtual_hub_config.s2s_config.routing_preference, "Microsoft Network")
 
   dynamic "bgp_settings" {
     for_each = try(var.virtual_hub_config.s2s_config.bgp_settings, null) == null ? [] : [1]
@@ -38,7 +39,7 @@ resource "azurerm_vpn_gateway" "s2s_gateway" {
           custom_ips = var.virtual_hub_config.s2s_config.bgp_settings.instance_0_bgp_peering_address.custom_ips
         }
       }
-      
+
       dynamic "instance_1_bgp_peering_address" {
         for_each = try(var.virtual_hub_config.s2s_config.bgp_settings.instance_1_bgp_peering_address, null) == null ? [] : [1]
 
@@ -46,7 +47,7 @@ resource "azurerm_vpn_gateway" "s2s_gateway" {
           custom_ips = var.virtual_hub_config.s2s_config.bgp_settings.instance_1_bgp_peering_address.custom_ips
         }
       }
-      
+
     }
   }
 

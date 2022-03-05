@@ -13,8 +13,12 @@ data "azurerm_key_vault_certificate" "trustedcas" {
     for key, value in try(var.settings.trusted_root_certificate, {}) : key => value
     if try(value.keyvault_key, null) != null
   }
-  name         = each.value.name
-  key_vault_id = var.keyvaults[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.keyvault_key].id
+  name = each.value.name
+  key_vault_id = try(
+    var.keyvaults[var.client_config.landingzone_key][each.value.keyvault_key].id,
+    var.keyvaults[each.value.lz_key][each.value.keyvault_key].id,
+    each.value.keyvault_id
+  )
 }
 
 data "azurerm_key_vault_certificate" "manual_certs" {
@@ -22,8 +26,12 @@ data "azurerm_key_vault_certificate" "manual_certs" {
     for key, value in local.listeners : key => value
     if try(value.keyvault_certificate.certificate_name, null) != null
   }
-  name         = each.value.keyvault_certificate.certificate_name
-  key_vault_id = var.keyvaults[try(each.value.keyvault_certificate.lz_key, var.client_config.landingzone_key)][each.value.keyvault_certificate.keyvault_key].id
+  name = each.value.keyvault_certificate.certificate_name
+  key_vault_id = try(
+    var.keyvaults[each.value.keyvault_certificate.lz_key][each.value.keyvault_certificate.keyvault_key].id,
+    var.keyvaults[var.client_config.landingzone_key][each.value.keyvault_certificate.keyvault_key].id,
+    each.value.keyvault_certificate.keyvault_id
+  )
 }
 
 resource "azurerm_application_gateway" "agw" {
@@ -45,6 +53,17 @@ resource "azurerm_application_gateway" "agw" {
   gateway_ip_configuration {
     name      = azurecaf_name.agw.result
     subnet_id = local.ip_configuration["gateway"].subnet_id
+  }
+
+  dynamic "ssl_policy" {
+    for_each = try(var.settings.ssl_policy, null) == null ? [] : [1]
+    content {
+      disabled_protocols   = try(var.settings.ssl_policy.disabled_protocols, null)
+      policy_type          = try(var.settings.ssl_policy.policy_type, null)
+      policy_name          = try(var.settings.ssl_policy.policy_name, null)
+      cipher_suites        = try(var.settings.ssl_policy.cipher_suites, null)
+      min_protocol_version = try(var.settings.ssl_policy.min_protocol_version, null)
+    }
   }
 
   dynamic "autoscale_configuration" {
@@ -102,10 +121,9 @@ resource "azurerm_application_gateway" "agw" {
       http_listener_name         = request_routing_rule.value.name
       backend_http_settings_name = local.backend_http_settings[request_routing_rule.value.app_key].name
       backend_address_pool_name  = local.backend_pools[request_routing_rule.value.app_key].name
-      url_path_map_name = try(local.request_routing_rules[format("%s-%s", request_routing_rule.value.app_key, request_routing_rule.value.request_routing_rule_key)].rule.url_path_map_name, try(local.url_path_maps[format("%s-%s", request_routing_rule.value.app_key,
-      local.request_routing_rules[format("%s-%s", request_routing_rule.value.app_key, request_routing_rule.value.request_routing_rule_key)].rule.url_path_map_key)].name, null))
-
-
+      url_path_map_name = try(local.request_routing_rules[format("%s-%s", request_routing_rule.value.app_key, request_routing_rule.value.request_routing_rule_key)].rule.url_path_map_name,
+      try(local.url_path_maps[format("%s-%s", request_routing_rule.value.app_key, local.request_routing_rules[format("%s-%s", request_routing_rule.value.app_key, request_routing_rule.value.request_routing_rule_key)].rule.url_path_map_key)].name, null))
+      rewrite_rule_set_name = try(local.rewrite_rule_sets[format("%s-%s", request_routing_rule.value.app_key, local.request_routing_rules[format("%s-%s", request_routing_rule.value.app_key, request_routing_rule.value.request_routing_rule_key)].rule.rewrite_rule_set_key)].name, null)
     }
   }
 
@@ -115,15 +133,40 @@ resource "azurerm_application_gateway" "agw" {
       default_backend_address_pool_name  = try(url_path_map.value.default_backend_address_pool_name, var.application_gateway_applications[url_path_map.value.app_key].name)
       default_backend_http_settings_name = try(url_path_map.value.default_backend_http_settings_name, var.application_gateway_applications[url_path_map.value.app_key].name)
       name                               = url_path_map.value.name
+      default_rewrite_rule_set_name      = try(local.rewrite_rule_sets[format("%s-%s", url_path_map.value.app_key, url_path_map.value.default_rewrite_rule_set_key)].name, null)
 
       dynamic "path_rule" {
         for_each = try(url_path_map.value.path_rules, [])
 
         content {
-          backend_address_pool_name  = try(var.application_gateway_applications[path_rule.value.backend_pool.app_key].name, var.application_gateway_applications[path_rule.value.backend_pool.app_key].name)
+          backend_address_pool_name  = try(var.application_gateway_applications[path_rule.value.backend_pool.app_key].name, var.application_gateway_applications[url_path_map.value.app_key].name)
           backend_http_settings_name = try(var.application_gateway_applications[path_rule.value.backend_http_setting.app_key].name, var.application_gateway_applications[url_path_map.value.app_key].name)
           name                       = path_rule.value.name
           paths                      = path_rule.value.paths
+          rewrite_rule_set_name      = try(local.rewrite_rule_sets[format("%s-%s", url_path_map.value.app_key, path_rule.value.rewrite_rule_set_key)].name, null)
+        }
+      }
+    }
+  }
+  dynamic "probe" {
+    for_each = try(local.probes)
+
+    content {
+      name                                      = probe.value.name
+      host                                      = try(probe.value.host, null)
+      interval                                  = probe.value.interval
+      protocol                                  = probe.value.protocol
+      path                                      = probe.value.path
+      timeout                                   = probe.value.timeout
+      unhealthy_threshold                       = probe.value.unhealthy_threshold
+      port                                      = try(probe.value.port, null)
+      pick_host_name_from_backend_http_settings = try(probe.value.pick_host_name_from_backend_http_settings, false)
+      minimum_servers                           = try(probe.value.minimum_servers, 0)
+      dynamic "match" {
+        for_each = try(probe.value.match, null) == null ? [] : [1]
+        content {
+          body        = try(probe.value.match.body, null)
+          status_code = try(probe.value.match.status_code, null)
         }
       }
     }
@@ -140,6 +183,8 @@ resource "azurerm_application_gateway" "agw" {
       request_timeout                     = try(backend_http_settings.value.request_timeout, 30)
       pick_host_name_from_backend_address = try(backend_http_settings.value.pick_host_name_from_backend_address, false)
       trusted_root_certificate_names      = try(backend_http_settings.value.trusted_root_certificate_names, null)
+      host_name                           = try(backend_http_settings.value.host_name, null)
+      probe_name                          = try(local.probes[format("%s-%s", backend_http_settings.key, backend_http_settings.value.probe_key)].name, null)
     }
   }
 
@@ -148,7 +193,7 @@ resource "azurerm_application_gateway" "agw" {
 
     content {
       name         = var.application_gateway_applications[backend_address_pool.key].name
-      fqdns        = try(backend_address_pool.value.fqdns, null)
+      fqdns        = try(length(backend_address_pool.value.fqdns), 0) == 0 ? null : backend_address_pool.value.fqdns
       ip_addresses = try(backend_address_pool.value.ip_addresses, null)
     }
   }
@@ -217,8 +262,33 @@ resource "azurerm_application_gateway" "agw" {
     }
   }
 
-
-  # waf_configuration {}
+  dynamic "waf_configuration" {
+    for_each = try(var.settings.waf_configuration, null) == null ? [] : [1]
+    content {
+      enabled                  = var.settings.waf_configuration.enabled
+      firewall_mode            = var.settings.waf_configuration.firewall_mode
+      rule_set_type            = var.settings.waf_configuration.rule_set_type
+      rule_set_version         = var.settings.waf_configuration.rule_set_version
+      file_upload_limit_mb     = try(var.settings.waf_configuration.file_upload_limit_mb, 100)
+      request_body_check       = try(var.settings.waf_configuration.request_body_check, true)
+      max_request_body_size_kb = try(var.settings.waf_configuration.max_request_body_size_kb, 128)
+      dynamic "disabled_rule_group" {
+        for_each = try(var.settings.waf_configuration.disabled_rule_groups, {})
+        content {
+          rule_group_name = disabled_rule_group.value.rule_group_name
+          rules           = try(disabled_rule_group.value.rules, null)
+        }
+      }
+      dynamic "exclusion" {
+        for_each = try(var.settings.waf_configuration.exclusions, {})
+        content {
+          match_variable          = exclusion.value.match_variable
+          selector_match_operator = try(exclusion.value.selector_match_operator, null)
+          selector                = try(exclusion.value.selector, null)
+        }
+      }
+    }
+  }
 
   # custom_error_configuration {}
 
@@ -226,9 +296,51 @@ resource "azurerm_application_gateway" "agw" {
 
   # autoscale_configuration {}
 
-  # rewrite_rule_set {}
+  dynamic "rewrite_rule_set" {
+    for_each = try(local.rewrite_rule_sets)
 
-
+    content {
+      name = rewrite_rule_set.value.name
+      dynamic "rewrite_rule" {
+        for_each = try(rewrite_rule_set.value.rewrite_rules, {})
+        content {
+          name          = rewrite_rule.value.name
+          rule_sequence = rewrite_rule.value.rule_sequence
+          dynamic "condition" {
+            for_each = try(rewrite_rule.value.conditions, {})
+            content {
+              variable    = condition.value.variable
+              pattern     = condition.value.pattern
+              ignore_case = try(condition.value.ignore_case, false)
+              negate      = try(condition.value.negate, false)
+            }
+          }
+          dynamic "request_header_configuration" {
+            for_each = try(rewrite_rule.value.request_header_configurations, {})
+            content {
+              header_name  = request_header_configuration.value.header_name
+              header_value = request_header_configuration.value.header_value
+            }
+          }
+          dynamic "response_header_configuration" {
+            for_each = try(rewrite_rule.value.response_header_configurations, {})
+            content {
+              header_name  = response_header_configuration.value.header_name
+              header_value = response_header_configuration.value.header_value
+            }
+          }
+          dynamic "url" {
+            for_each = try(rewrite_rule.value.url, null) == null ? [] : [1]
+            content {
+              path         = try(rewrite_rule.value.url.path, null)
+              query_string = try(rewrite_rule.value.url.query_string, null)
+              reroute      = try(rewrite_rule.value.url.reroute, null)
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 output "certificate_keys" {

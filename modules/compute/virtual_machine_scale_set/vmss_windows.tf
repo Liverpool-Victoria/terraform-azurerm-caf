@@ -17,7 +17,7 @@ resource "azurecaf_name" "windows_computer_name_prefix" {
   for_each = local.os_type == "windows" ? var.settings.vmss_settings : {}
 
   name          = try(each.value.computer_name_prefix, each.value.name)
-  resource_type = "azurerm_vm_windows_computer_name_prefix" 
+  resource_type = "azurerm_vm_windows_computer_name_prefix"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
   clean_input   = true
@@ -75,6 +75,8 @@ resource "azurerm_windows_virtual_machine_scale_set" "vmss" {
   scale_in_policy              = try(each.value.scale_in_policy, null)
   zone_balance                 = try(each.value.zone_balance, null)
   zones                        = try(each.value.zones, null)
+  timezone                     = try(each.value.timezone, null)
+  license_type                 = try(each.value.license_type, null)
 
   dynamic "network_interface" {
     for_each = try(var.settings.network_interfaces, {})
@@ -87,12 +89,17 @@ resource "azurerm_windows_virtual_machine_scale_set" "vmss" {
       network_security_group_id     = try(network_interface.value.network_security_group_id, null)
 
       ip_configuration {
-        name      = azurecaf_name.windows_nic[network_interface.key].result
-        primary   = try(network_interface.value.primary, false)
-        subnet_id = try(var.vnets[var.client_config.landingzone_key][network_interface.value.vnet_key].subnets[network_interface.value.subnet_key].id, var.vnets[network_interface.value.lz_key][network_interface.value.vnet_key].subnets[network_interface.value.subnet_key].id)
-        load_balancer_backend_address_pool_ids = try(local.load_balancer_backend_address_pool_ids, null)
+        name    = azurecaf_name.windows_nic[network_interface.key].result
+        primary = try(network_interface.value.primary, false)
+        #subnet_id                                    = try(var.vnets[var.client_config.landingzone_key][network_interface.value.vnet_key].subnets[network_interface.value.subnet_key].id, var.vnets[network_interface.value.lz_key][network_interface.value.vnet_key].subnets[network_interface.value.subnet_key].id)
+        subnet_id = coalesce(
+          try(network_interface.value.subnet_id, null),
+          try(var.vnets[var.client_config.landingzone_key][network_interface.value.vnet_key].subnets[network_interface.value.subnet_key].id, null),
+          try(var.vnets[network_interface.value.lz_key][network_interface.value.vnet_key].subnets[network_interface.value.subnet_key].id, null)
+        )
+        load_balancer_backend_address_pool_ids       = try(local.load_balancer_backend_address_pool_ids, null)
         application_gateway_backend_address_pool_ids = try(local.application_gateway_backend_address_pool_ids, null)
-        application_security_group_ids = try(local.application_security_group_ids,null)
+        application_security_group_ids               = try(local.application_security_group_ids, null)
       }
     }
   }
@@ -132,8 +139,11 @@ resource "azurerm_windows_virtual_machine_scale_set" "vmss" {
     }
   }
 
-  source_image_id = try(each.value.custom_image_id, var.custom_image_ids[each.value.lz_key][each.value.custom_image_key].id, null)
-  
+  source_image_id = try(each.value.source_image_reference, null) == null ? format("%s%s",
+    try(each.value.custom_image_id, var.image_definitions[var.client_config.landingzone_key][each.value.custom_image_key].id,
+    var.image_definitions[each.value.custom_image_lz_key][each.value.custom_image_key].id),
+  try("/versions/${each.value.custom_image_version}", "")) : null
+
   dynamic "plan" {
     for_each = try(each.value.plan, null) != null ? [1] : []
 
@@ -173,7 +183,7 @@ resource "azurerm_windows_virtual_machine_scale_set" "vmss" {
       force_update_tag           = try(extension.value.force_update_tag, null)
       protected_settings         = try(extension.value.protected_settings, null)
       provision_after_extensions = try(extension.value.provision_after_extensions, null)
-      settings                   = try(extension.value.settings, null)
+      settings                   = try(jsonencode(extension.value.settings), null)
     }
   }
 
@@ -200,10 +210,10 @@ resource "azurerm_windows_virtual_machine_scale_set" "vmss" {
     for_each = try(each.value.automatic_os_upgrade_policy, false) == false ? [] : [1]
 
     content {
-      disable_automatic_rollback = each.value.automatic_os_upgrade_policy.disable_automatic_rollback
+      disable_automatic_rollback  = each.value.automatic_os_upgrade_policy.disable_automatic_rollback
       enable_automatic_os_upgrade = each.value.automatic_os_upgrade_policy.enable_automatic_os_upgrade
     }
-  }  
+  }
 
   dynamic "additional_unattend_content" {
     for_each = try(each.value.additional_unattend_content, false) == false ? [] : [1]
@@ -250,6 +260,22 @@ resource "azurerm_windows_virtual_machine_scale_set" "vmss" {
       protocol        = try(each.value.winrm.protocol, "Https")
       certificate_url = try(each.value.winrm.enable_self_signed, false) ? azurerm_key_vault_certificate.self_signed_winrm[each.key].secret_id : each.value.winrm.certificate_url
     }
+  }
+
+  dynamic "automatic_instance_repair" {
+    for_each = try(each.value.automatic_instance_repair, false) == false ? [] : [1]
+    content {
+      enabled      = each.value.automatic_instance_repair.enabled
+      grace_period = each.value.automatic_instance_repair.grace_period
+    }
+  }
+
+  health_probe_id = try(var.load_balancers[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.health_probe.loadbalancer_key].probes[each.value.health_probe.probe_key].id, null)
+
+  lifecycle {
+    ignore_changes = [
+      resource_group_name, location
+    ]
   }
 
 }
