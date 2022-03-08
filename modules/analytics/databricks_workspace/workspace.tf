@@ -84,8 +84,8 @@ resource "azurerm_databricks_workspace" "ws" {
       #the NSG-association ID is the subnet-id, so it can be simplified:
       private_subnet_network_security_group_association_id = try(coalesce(
         try(var.settings.custom_parameters.private_subnet_network_security_group_association_id, null),
-        try(var.vnets[var.client_config.landingzone_key][var.settings.custom_parameters.vnet_key].subnets[var.settings.custom_parameters.public_subnet_key].id, null),
-        try(var.vnets[var.settings.custom_parameters.lz_key][var.settings.custom_parameters.vnet_key].subnets[var.settings.custom_parameters.public_subnet_key].id, null),
+        try(var.vnets[var.client_config.landingzone_key][var.settings.custom_parameters.vnet_key].subnets[var.settings.custom_parameters.private_subnet_key].id, null),
+        try(var.vnets[var.settings.custom_parameters.lz_key][var.settings.custom_parameters.vnet_key].subnets[var.settings.custom_parameters.private_subnet_key].id, null),
         ),
         null
       )

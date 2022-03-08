@@ -9,4 +9,5 @@ module "nsg_flows" {
   settings          = var.settings.flow_logs
   network_watchers  = var.network_watchers
   client_config     = var.client_config
+  tags              = local.tags
 }
