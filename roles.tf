@@ -87,6 +87,7 @@ locals {
     azuread_service_principals                 = local.combined_objects_azuread_service_principals
     azuread_users                              = local.combined_objects_azuread_users
     azurerm_firewalls                          = local.combined_objects_azurerm_firewalls
+    batch_accounts                             = local.combined_objects_batch_accounts
     databricks_workspaces                      = local.combined_objects_databricks_workspaces
     dns_zones                                  = local.combined_objects_dns_zones
     event_hub_namespaces                       = local.combined_objects_event_hub_namespaces
@@ -115,7 +116,6 @@ locals {
     synapse_workspaces                         = local.combined_objects_synapse_workspaces
     virtual_subnets                            = local.combined_objects_virtual_subnets
   }
-
 
   logged_in = tomap(
     {
