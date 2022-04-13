@@ -30,7 +30,7 @@
     // "shutdownAction": "none",
 
     // Uncomment the next line to run commands after the container is created.
-    "postCreateCommand": "sudo cp -R /tmp/.ssh-localhost/* ~/.ssh && sudo chown -R $(whoami):$(whoami) /tf/caf ~/.ssh && sudo chmod 400 ~/.ssh/* && git config --global core.editor vi && pre-commit install && pre-commit autoupdate",
+    "postCreateCommand": "sudo cp -R /tmp/.ssh-localhost/* ~/.ssh && sudo chown -R $(whoami):$(whoami) /tf/caf ~/.ssh && sudo chmod 400 ~/.ssh/* && git config --global core.editor vi && git config --global http.proxy http://host.docker.internal:3128 && git config oh-my-zsh.hide-info 1 && pre-commit install && pre-commit autoupdate",
 
     // Add the IDs of extensions you want installed when the container is created in the array below.
     "extensions": [
@@ -38,5 +38,12 @@
         "mutantdino.resourcemonitor",
         "ms-azure-devops.azure-pipelines",
         "omartawfik.github-actions-vscode"
-    ]
+    ],
+
+    // Add proxy support for container, assuming local Px proxy is in use
+    "containerEnv": {
+        "HTTP_PROXY": "http://host.docker.internal:3128",
+        "HTTPS_PROXY": "http://host.docker.internal:3128",
+        "NO_PROXY": "localhost,.local,.group.net,.unix.group.net,.lvfs.net,.unix.lvfs.net,127.0.0.1,0,1,2,3,4,5,6,7,8,9"
+    },
 }

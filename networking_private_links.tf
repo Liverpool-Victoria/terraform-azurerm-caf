@@ -26,6 +26,7 @@ module "private_endpoints" {
 
     aks_clusters               = local.combined_objects_aks_clusters
     azure_container_registries = local.combined_objects_azure_container_registries
+    batch_accounts             = local.combined_objects_batch_accounts
     cosmos_dbs                 = local.combined_objects_cosmos_dbs
     data_factory               = local.combined_objects_data_factory
     event_hub_namespaces       = local.combined_objects_event_hub_namespaces
