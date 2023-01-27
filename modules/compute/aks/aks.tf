@@ -63,7 +63,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     max_pods                     = try(var.settings.default_node_pool.max_pods, 30)
     min_count                    = try(var.settings.default_node_pool.min_count, null)
     name                         = var.settings.default_node_pool.name //azurecaf_name.default_node_pool.result
-    node_count                   = try(var.settings.default_node_pool.node_count, 1)
+    node_count                   = try(var.settings.default_node_pool.enable_auto_scaling) ? null : try(var.settings.default_node_pool.node_count, 1)
     node_labels                  = try(var.settings.default_node_pool.node_labels, null)
     node_public_ip_prefix_id     = try(var.settings.default_node_pool.node_public_ip_prefix_id, null)
     only_critical_addons_enabled = try(var.settings.default_node_pool.only_critical_addons_enabled, false)
@@ -370,7 +370,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   lifecycle {
     ignore_changes = [
-      windows_profile, private_dns_zone_id, default_node_pool[0].node_count
+      windows_profile, private_dns_zone_id
     ]
   }
   tags = merge(local.tags, lookup(var.settings, "tags", {}))
@@ -495,10 +495,5 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
 
   max_count  = try(each.value.max_count, null)
   min_count  = try(each.value.min_count, null)
-  node_count = try(each.value.node_count, null)
-  lifecycle {
-    ignore_changes = [
-      node_count
-    ]
-  }
+  node_count = try(each.value.enable_auto_scaling, false) ? null: try(each.value.node_count, null)
 }
