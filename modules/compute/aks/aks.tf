@@ -496,6 +496,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
 
   max_count  = try(each.value.max_count, null)
   min_count  = try(each.value.min_count, null)
-  # node_count = try(each.value.enable_auto_scaling, false) ? null: try(each.value.node_count, null)
+  node_count = try(each.value.enable_auto_scaling, false) ? null: try(each.value.node_count, null)
   node_count = try(each.value.node_count, null)
 }
