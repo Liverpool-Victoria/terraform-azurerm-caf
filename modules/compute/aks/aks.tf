@@ -65,7 +65,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name                         = var.settings.default_node_pool.name //azurecaf_name.default_node_pool.result
     # node_count                   = try(var.settings.default_node_pool.enable_auto_scaling) ? null : try(var.settings.default_node_pool.node_count, 1)
     # node_count                   = try(var.settings.default_node_pool.node_count, null)
-    node_count = null
+    node_count = can(each.value.enable_auto_scaling==true) ? null: try(each.value.node_count, null)
     node_labels                  = try(var.settings.default_node_pool.node_labels, null)
     node_public_ip_prefix_id     = try(var.settings.default_node_pool.node_public_ip_prefix_id, null)
     only_critical_addons_enabled = try(var.settings.default_node_pool.only_critical_addons_enabled, false)
@@ -498,6 +498,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
   max_count  = try(each.value.max_count, null)
   min_count  = try(each.value.min_count, null)
   # node_count = try(each.value.enable_auto_scaling, false) ? null: try(each.value.node_count, null)
-  # node_count = try(each.value.node_count, null)
-  node_count = null
+  node_count = can(each.value.enable_auto_scaling==true) ? null: try(each.value.node_count, null)
+  # node_count = try(each.value.node_count, null)=
 }
