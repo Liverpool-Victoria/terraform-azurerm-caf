@@ -44,6 +44,20 @@ resource "null_resource" "aks_registration_preview" {
 }
 ### AKS cluster resource
 
+locals {
+  # Remote amd locally created diagnostics  objects
+  combined_diagnostics = {
+    enable_auto_scaling  = try(var.settings.default_node_pool.enable_auto_scaling, false)
+    settings_node_count  = var.settings.default_node_pool.node_count
+    try_node_count       = try(var.settings.default_node_pool.node_count, 1)
+    can_node_count       = can(var.settings.default_node_pool.enable_auto_scaling==true) ? null : try(var.settings.default_node_pool.node_count, 1)
+  }
+}
+output "diagnostics" {
+  value = local.combined_diagnostics
+}
+
+
 resource "azurerm_kubernetes_cluster" "aks" {
   depends_on = [
     null_resource.aks_registration_preview
