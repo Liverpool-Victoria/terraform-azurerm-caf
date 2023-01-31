@@ -44,21 +44,6 @@ resource "null_resource" "aks_registration_preview" {
 }
 ### AKS cluster resource
 
-locals {
-  # Remote amd locally created diagnostics  objects
-  combined_diagnostics = {
-    enable_auto_scaling  = try(var.settings.default_node_pool.enable_auto_scaling, false)
-    settings_node_count  = var.settings.default_node_pool.node_count
-    try_node_count       = try(var.settings.default_node_pool.node_count, 1)
-    can_node_count       = can(var.settings.default_node_pool.enable_auto_scaling) ? null : try(var.settings.default_node_pool.node_count, 1)
-  }
-}
-output "diagnostics" {
-  value =local.combined_diagnostics
-  sensitive = false
-}
-
-
 resource "azurerm_kubernetes_cluster" "aks" {
   depends_on = [
     null_resource.aks_registration_preview
@@ -78,9 +63,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
     max_pods                     = try(var.settings.default_node_pool.max_pods, 30)
     min_count                    = try(var.settings.default_node_pool.min_count, null)
     name                         = var.settings.default_node_pool.name //azurecaf_name.default_node_pool.result
-    # node_count                   = 5
-    # node_count                   = try(var.settings.default_node_pool.node_count, 1)
-    # node_count                   = can(var.settings.default_node_pool.enable_auto_scaling) ? null : try(var.settings.default_node_pool.node_count, 1)
     node_count                   = try(var.settings.default_node_pool.enable_auto_scaling,false) ? null: try(var.settings.default_node_pool.node_count, 1)
     node_labels                  = try(var.settings.default_node_pool.node_labels, null)
     node_public_ip_prefix_id     = try(var.settings.default_node_pool.node_public_ip_prefix_id, null)
@@ -513,5 +495,5 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
 
   max_count  = try(each.value.max_count, null)
   min_count  = try(each.value.min_count, null)
-  node_count = can(each.value.enable_auto_scaling==true) ? null: try(each.value.node_count, null)
+  node_count = try(each.value.enable_auto_scaling,false) ? null: try(each.value.node_count, 1)
 }
