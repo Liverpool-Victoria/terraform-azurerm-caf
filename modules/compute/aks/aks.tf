@@ -407,7 +407,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
   kubernetes_cluster_id  = azurerm_kubernetes_cluster.aks.id
   vm_size                = each.value.vm_size
   availability_zones     = try(each.value.availability_zones, null)
-  enable_auto_scaling    = try(each.value.enable_auto_scaling, false)
+  # enable_auto_scaling    = try(each.value.enable_auto_scaling, false)
+  enable_auto_scaling    = false
   enable_host_encryption = try(each.value.enable_host_encryption, false)
   enable_node_public_ip  = try(each.value.enable_node_public_ip, false)
   eviction_policy        = try(each.value.eviction_policy, null)
@@ -497,5 +498,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
 
   max_count  = try(each.value.max_count, null)
   min_count  = try(each.value.min_count, null)
-  node_count = can(each.value.enable_auto_scaling==true) ? null: try(each.value.node_count, null)
+  # node_count = can(each.value.enable_auto_scaling==true) ? null: try(each.value.node_count, null)
+  node_count = 4
 }
