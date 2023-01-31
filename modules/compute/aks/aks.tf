@@ -47,14 +47,15 @@ resource "null_resource" "aks_registration_preview" {
 locals {
   # Remote amd locally created diagnostics  objects
   combined_diagnostics = {
-    enable_auto_scaling  = try(var.settings.default_node_pool.enable_auto_scaling, false)
-    settings_node_count  = var.settings.default_node_pool.node_count
-    try_node_count       = try(var.settings.default_node_pool.node_count, 1)
-    can_node_count       = can(var.settings.default_node_pool.enable_auto_scaling) ? null : try(var.settings.default_node_pool.node_count, 1)
+    enable_auto_scaling  = nonsensitive(try(var.settings.default_node_pool.enable_auto_scaling, false))
+    settings_node_count  = nonsensitive(var.settings.default_node_pool.node_count)
+    try_node_count       = nonsensitive(try(var.settings.default_node_pool.node_count, 1))
+    can_node_count       = nonsensitive(can(var.settings.default_node_pool.enable_auto_scaling) ? null : try(var.settings.default_node_pool.node_count, 1))
   }
 }
 output "diagnostics" {
-  value = nonsensitive(local.combined_diagnostics)
+  value =local.combined_diagnostics
+  sensitive = false
 }
 
 
