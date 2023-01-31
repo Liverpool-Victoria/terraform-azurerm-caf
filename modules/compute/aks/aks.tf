@@ -54,8 +54,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   default_node_pool {
     availability_zones           = try(var.settings.default_node_pool.availability_zones, null)
-    # enable_auto_scaling          = try(var.settings.default_node_pool.enable_auto_scaling, false)
-    enable_auto_scaling          = false
+    enable_auto_scaling          = try(var.settings.default_node_pool.enable_auto_scaling, false)
+    # enable_auto_scaling          = false
     enable_host_encryption       = try(var.settings.default_node_pool.enable_host_encryption, false)
     enable_node_public_ip        = try(var.settings.default_node_pool.enable_node_public_ip, false)
     fips_enabled                 = try(var.settings.default_node_pool.fips_enabled, null)
@@ -64,8 +64,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
     max_pods                     = try(var.settings.default_node_pool.max_pods, 30)
     min_count                    = try(var.settings.default_node_pool.min_count, null)
     name                         = var.settings.default_node_pool.name //azurecaf_name.default_node_pool.result
-    # node_count                   = can(var.settings.default_node_pool.enable_auto_scaling==true) ? null : try(var.settings.default_node_pool.node_count, 1)
-    node_count                   = 4
+    node_count                   = can(var.settings.default_node_pool.enable_auto_scaling==true) ? null : try(var.settings.default_node_pool.node_count, 1)
+    # node_count                   = 4
     node_labels                  = try(var.settings.default_node_pool.node_labels, null)
     node_public_ip_prefix_id     = try(var.settings.default_node_pool.node_public_ip_prefix_id, null)
     only_critical_addons_enabled = try(var.settings.default_node_pool.only_critical_addons_enabled, false)
@@ -407,8 +407,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
   kubernetes_cluster_id  = azurerm_kubernetes_cluster.aks.id
   vm_size                = each.value.vm_size
   availability_zones     = try(each.value.availability_zones, null)
-  # enable_auto_scaling    = try(each.value.enable_auto_scaling, false)
-  enable_auto_scaling    = false
+  enable_auto_scaling    = try(each.value.enable_auto_scaling, false)
+  # enable_auto_scaling    = false
   enable_host_encryption = try(each.value.enable_host_encryption, false)
   enable_node_public_ip  = try(each.value.enable_node_public_ip, false)
   eviction_policy        = try(each.value.eviction_policy, null)
@@ -498,6 +498,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
 
   max_count  = try(each.value.max_count, null)
   min_count  = try(each.value.min_count, null)
-  # node_count = can(each.value.enable_auto_scaling==true) ? null: try(each.value.node_count, null)
-  node_count = 4
+  node_count = can(each.value.enable_auto_scaling==true) ? null: try(each.value.node_count, null)
+  # node_count = 4
 }
