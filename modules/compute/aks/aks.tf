@@ -60,9 +60,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
     enable_node_public_ip        = try(var.settings.default_node_pool.enable_node_public_ip, false)
     fips_enabled                 = try(var.settings.default_node_pool.fips_enabled, null)
     kubelet_disk_type            = try(var.settings.default_node_pool.kubelet_disk_type, null)
-    max_count                    = try(var.settings.default_node_pool.max_count, null)
+    # max_count                    = try(var.settings.default_node_pool.max_count, null)
+    max_count                    = null
     max_pods                     = try(var.settings.default_node_pool.max_pods, 30)
-    min_count                    = try(var.settings.default_node_pool.min_count, null)
+    # min_count                    = try(var.settings.default_node_pool.min_count, null)
+    min_count                    = null
     name                         = var.settings.default_node_pool.name //azurecaf_name.default_node_pool.result
     # node_count                   = can(var.settings.default_node_pool.enable_auto_scaling==true) ? null : try(var.settings.default_node_pool.node_count, 1)
     node_count                   = 4
