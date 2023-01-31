@@ -54,8 +54,7 @@ locals {
   }
 }
 output "diagnostics" {
-  value = local.combined_diagnostics
-  sensitive = false
+  value = nonsensitive(local.combined_diagnostics)
 }
 
 
@@ -80,7 +79,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name                         = var.settings.default_node_pool.name //azurecaf_name.default_node_pool.result
     # node_count                   = 5
     # node_count                   = try(var.settings.default_node_pool.node_count, 1)
-    node_count                   = can(var.settings.default_node_pool.enable_auto_scaling) ? null : try(var.settings.default_node_pool.node_count, 1)
+    # node_count                   = can(var.settings.default_node_pool.enable_auto_scaling) ? null : try(var.settings.default_node_pool.node_count, 1)
+    node_count                   = can(var.settings.default_node_pool.enable_auto_scaling) ? 6 : 7
     node_labels                  = try(var.settings.default_node_pool.node_labels, null)
     node_public_ip_prefix_id     = try(var.settings.default_node_pool.node_public_ip_prefix_id, null)
     only_critical_addons_enabled = try(var.settings.default_node_pool.only_critical_addons_enabled, false)
