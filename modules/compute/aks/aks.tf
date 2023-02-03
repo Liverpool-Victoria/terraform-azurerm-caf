@@ -370,7 +370,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   lifecycle {
     ignore_changes = [
-      windows_profile, private_dns_zone_id,default_node_pool[0].node_count
+      windows_profile, private_dns_zone_id
     ]
   }
   tags = merge(local.tags, lookup(var.settings, "tags", {}))
