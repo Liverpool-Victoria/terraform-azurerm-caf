@@ -11,6 +11,11 @@ regexes = [
    '''(?i)(client[_-]?ID|AppInsightKey|InstrumentationKey)["']?\s*[:=]\s*["']?[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}'''
 ]
 
+stopwords= [
+    "devops_region",
+    "central_logs_region"
+]
+
 paths = [
   '''examples''',
 ]
