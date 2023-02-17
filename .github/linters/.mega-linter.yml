@@ -1,0 +1,6 @@
+# All available variables are described in documentation
+# https://megalinter.io/configuration/
+ENABLE_LINTERS: REPOSITORY_GITLEAKS,REPOSITORY_TRIVY
+REPOSITORY_TRIVY_ARGUMENTS: --timeout 10m
+SHOW_ELAPSED_TIME: true
+VALIDATE_ALL_CODEBASE: false
