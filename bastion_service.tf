@@ -36,6 +36,8 @@ resource "azurerm_bastion_host" "host" {
     try(local.combined_objects_resource_groups[local.client_config.landingzone_key][each.value.resource_group.key].name, null)
   )
 
+  sku = try(each.value.sku, null)
+
   ip_configuration {
     name      = each.value.name
     subnet_id = local.combined_objects_networking[try(each.value.vnet.lz_key, local.client_config.landingzone_key)][try(each.value.vnet.vnet_key, each.value.vnet_key)].subnets[try(each.value.vnet.subnet_key, each.value.subnet_key)].id
