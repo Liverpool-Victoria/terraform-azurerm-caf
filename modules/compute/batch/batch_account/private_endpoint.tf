@@ -9,7 +9,7 @@ module "private_endpoint" {
   location            = local.location
   name                = each.value.name
   private_dns         = var.remote_objects.private_dns
-  resource_group_name = var.remote_objects.resource_groups[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.resource_group_key].name
+  resource_group_name = try(var.remote_objects.resource_groups[var.client_config.landingzone_key][each.value.resource_group_key].name, var.remote_objects.resource_groups[each.value.lz_key][each.value.resource_group_key].name)
   resource_id         = azurerm_batch_account.account.id
   settings            = each.value
   subnet_id           = can(each.value.subnet_id) ? each.value.subnet_id : var.remote_objects.vnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.vnet_key].subnets[each.value.subnet_key].id
