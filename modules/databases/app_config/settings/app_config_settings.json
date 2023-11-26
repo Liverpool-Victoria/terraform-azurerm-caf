@@ -3,25 +3,25 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "configName": {
-      "type": "string",
+      "type": "String",
       "metadata": {
         "description": "App Config Resource Name."
       }
     },
     "keyValueNames": {
-      "type": "array",
+      "type": "Array",
       "metadata": {
         "description": "Specifies the names of the key-value resources. The name is a combination of key and label with $ as delimiter."
       }
     },
     "keyValueValues": {
-      "type": "array",
+      "type": "Array",
       "metadata": {
         "description": "Specifies the values of the key-value resources."
       }
     },
     "tags": {
-      "type": "object",
+      "type": "Object",
       "defaultValue": {},
       "metadata": {
         "description": "Adds tags for the key-value resources. It's optional"
