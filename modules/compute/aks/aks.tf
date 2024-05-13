@@ -385,7 +385,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   lifecycle {
     ignore_changes = [
-      windows_profile, private_dns_zone_id
+      windows_profile, private_dns_zone_id, tags["ops_commitment"], tags["ops_team"]
     ]
   }
   tags = merge(local.tags, lookup(var.settings, "tags", {}))
@@ -569,11 +569,5 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
   max_count  = try(each.value.max_count, null)
   min_count  = try(each.value.min_count, null)
   node_count = try(each.value.node_count, null)
-  
-  lifecycle {
-    ignore_changes = [
-      tags["ops_commitment"], tags["ops_team"],
-    ]
-  }
 }
 
