@@ -39,3 +39,6 @@ variable "private_endpoints" {
 variable "private_dns" {
   default = {}
 }
+variable "maintenance_window_node_os" {
+  default = {}
+}

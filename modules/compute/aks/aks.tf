@@ -317,6 +317,26 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
   }
 
+  dynamic "maintenance_window_node_os" {
+    for_each = var.settings.maintenance_window_node_os == null ? [] : [var.settings.maintenance_window_node_os]
+    content {
+      day_of_week  = var.settings.maintenance_window_node_os.day_of_week
+      duration     = var.settings.maintenance_window_node_os.duration
+      frequency    = var.settings.maintenance_window_node_os.frequency
+      interval     = var.settings.maintenance_window_node_os.interval
+      start_time   = var.settings.maintenance_window_node_os.start_time
+      utc_offset   = var.settings.maintenance_window_node_os.utc_offset
+
+      dynamic "not_allowed" {
+        for_each = var.settings.maintenance_window_node_os.not_allowed == null ? [] : var.settings.maintenance_window_node_os.not_allowed
+        content {
+          end   = var.settings.maintenance_window_node.not_allowed.end
+          start = var.settings.maintenance_window_node.not_allowed.start
+        }
+      }
+    }
+  }
+
   dynamic "network_profile" {
     for_each = try(var.settings.network_profile[*], {})
     content {
