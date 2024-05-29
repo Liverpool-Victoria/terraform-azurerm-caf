@@ -318,7 +318,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   dynamic "maintenance_window_node_os" {
-    for_each = var.settings.maintenance_window_node_os == null ? [] : [var.settings.maintenance_window_node_os]
+    for_each = try(var.settings.maintenance_window_node_os, null) == null ? [] : [var.settings.maintenance_window_node_os]
     content {
       day_of_week  = var.settings.maintenance_window_node_os.day_of_week
       duration     = var.settings.maintenance_window_node_os.duration
