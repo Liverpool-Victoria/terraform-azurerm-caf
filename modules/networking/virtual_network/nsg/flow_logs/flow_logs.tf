@@ -1,6 +1,6 @@
 resource "azurerm_network_watcher_flow_log" "flow" {
   count = try(var.settings, {}) == {} ? 0 : 1
-
+  tags = var.tags
 
   network_watcher_name = try(
     var.network_watchers[try(var.settings.lz_key, var.client_config.landingzone_key)][var.settings.network_watcher_key].name,
@@ -29,7 +29,7 @@ resource "azurerm_network_watcher_flow_log" "flow" {
       enabled               = var.settings.traffic_analytics.enabled
       interval_in_minutes   = try(var.settings.traffic_analytics.interval_in_minutes, null)
       workspace_id          = can(var.diagnostics.diagnostics_destinations.log_analytics[var.settings.traffic_analytics.log_analytics_workspace_destination].log_analytics_workspace_id) ? var.diagnostics.diagnostics_destinations.log_analytics[var.settings.traffic_analytics.log_analytics_workspace_destination].log_analytics_workspace_id : var.diagnostics.log_analytics[var.diagnostics.diagnostics_destinations.log_analytics[var.settings.traffic_analytics.log_analytics_workspace_destination].log_analytics_key].workspace_id
-      workspace_region      = var.resource_location
+      workspace_region      = try(var.diagnostics.diagnostics_destinations.log_analytics[var.settings.traffic_analytics.log_analytics_workspace_destination].log_analytics_location, var.resource_location)
       workspace_resource_id = can(var.diagnostics.diagnostics_destinations.log_analytics[var.settings.traffic_analytics.log_analytics_workspace_destination].log_analytics_resource_id) ? var.diagnostics.diagnostics_destinations.log_analytics[var.settings.traffic_analytics.log_analytics_workspace_destination].log_analytics_resource_id : var.diagnostics.log_analytics[var.diagnostics.diagnostics_destinations.log_analytics[var.settings.traffic_analytics.log_analytics_workspace_destination].log_analytics_key].id
     }
   }
