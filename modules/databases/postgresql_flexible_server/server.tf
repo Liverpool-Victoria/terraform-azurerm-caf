@@ -24,6 +24,8 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   point_in_time_restore_time_in_utc = try(var.settings.create_mode, "PointInTimeRestore") == "PointInTimeRestore" ? try(var.settings.point_in_time_restore_time_in_utc, null) : null
   source_server_id                  = try(var.settings.create_mode, "PointInTimeRestore") == "PointInTimeRestore" ? try(var.settings.source_server_id, null) : null
 
+  public_network_access_enabled = try(var.settings.public_network_access_enabled, false)
+
   administrator_login    = try(var.settings.create_mode, "Default") == "Default" && try(var.settings.authentication.password_auth_enabled, true) ? try(var.settings.administrator_username, "pgadmin") : null
   administrator_password = try(var.settings.create_mode, "Default") == "Default" && try(var.settings.authentication.password_auth_enabled, true) ? try(var.settings.administrator_password, azurerm_key_vault_secret.postgresql_administrator_password.0.value) : null
 
