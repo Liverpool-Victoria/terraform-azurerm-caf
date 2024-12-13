@@ -50,5 +50,8 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
     delete = "60m"
   }
 
+  lifecyle {
+    ignore_changes = [virtual_network_gateway_id]
+  }
 
 }
