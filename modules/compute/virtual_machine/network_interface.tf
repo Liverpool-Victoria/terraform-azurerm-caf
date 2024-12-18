@@ -53,18 +53,18 @@ resource "azurerm_network_interface" "nic" {
   internal_dns_name_label       = lookup(each.value, "internal_dns_name_label", null)
   tags                          = merge(local.tags, try(each.value.tags, null))
 
-  ip_configuration {
-    name                          = azurecaf_name.nic[each.key].result
-    subnet_id                     = can(each.value.subnet_id) || can(each.value.vnet_key) == false ? try(each.value.subnet_id, var.virtual_subnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.subnet_key].id) : var.vnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.vnet_key].subnets[each.value.subnet_key].id
-    private_ip_address_allocation = lookup(each.value, "private_ip_address_allocation", "Dynamic")
-    private_ip_address_version    = lookup(each.value, "private_ip_address_version", null)
-    private_ip_address            = lookup(each.value, "private_ip_address", null)
-    primary                       = lookup(each.value, "primary", null)
-    public_ip_address_id          = can(each.value.public_address_id) || can(try(each.value.public_ip_address.key, each.value.public_ip_address_key)) == false ? try(each.value.public_address_id, null) : var.public_ip_addresses[try(each.value.public_ip_address.lz_key, var.client_config.landingzone_key)][try(each.value.public_ip_address.key, each.value.public_ip_address_key)].id
+ # ip_configuration {
+ #   name                          = azurecaf_name.nic[each.key].result
+ #   subnet_id                     = can(each.value.subnet_id) || can(each.value.vnet_key) == false ? try(each.value.subnet_id, var.virtual_subnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.subnet_key].id) : var.vnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.vnet_key].subnets[each.value.subnet_key].id
+ #   private_ip_address_allocation = lookup(each.value, "private_ip_address_allocation", "Dynamic")
+ #   private_ip_address_version    = lookup(each.value, "private_ip_address_version", null)
+ #   private_ip_address            = lookup(each.value, "private_ip_address", null)
+ #   primary                       = lookup(each.value, "primary", null)
+ #   public_ip_address_id          = can(each.value.public_address_id) || can(try(each.value.public_ip_address.key, each.value.public_ip_address_key)) == false ? try(each.value.public_address_id, null) : var.public_ip_addresses[try(each.value.public_ip_address.lz_key, var.client_config.landingzone_key)][try(each.value.public_ip_address.key, each.value.public_ip_address_key)].id
 
     # Public ip address id logic in previous version was bugged, as it checks for var.client_config.landingzone_key prior to each.value.lz_key. thus, in the new logic to ensure backward compatible, only each.public_ip_address.lz_key is considered and not each.value.lz_key for public ip.
 
-  }
+ # }
 
   dynamic "ip_configuration" {
     for_each = {
