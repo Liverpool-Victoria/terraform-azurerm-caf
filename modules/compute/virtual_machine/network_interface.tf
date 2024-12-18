@@ -67,7 +67,11 @@ resource "azurerm_network_interface" "nic" {
   }
 
   dynamic "ip_configuration" {
-    for_each = try(each.value.ip_configurations, {})
+    for_each = {
+      for key, value in try(var.settings.ip_configurations, {}) : key => value
+      if can(value.subnet_key)
+    }
+    #for_each = try(each.value.ip_configurations, {})
 
     content {
       name                          = ip_configuration.value.name
