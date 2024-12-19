@@ -96,3 +96,8 @@ variable "virtual_subnets" {
   default     = {}
   nullable    = false
 }
+
+variable "ip_configurations" {
+  description = "To map the value for different ip configurations"
+  type        = list
+}
