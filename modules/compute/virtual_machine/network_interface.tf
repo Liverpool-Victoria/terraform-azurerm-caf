@@ -67,18 +67,6 @@ resource "azurerm_network_interface" "nic" {
 
   }
 
-   ip_configuration {
-    
-    name                          = lookup(each.value, "name", null)#value.name #ip_configuration.value.name #azurecaf_name.nic[each.key].result
-    subnet_id                     = can(each.value.subnet_id) || can(each.value.vnet_key) == false ? try(each.value.subnet_id, var.virtual_subnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.subnet_key].id) : var.vnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.vnet_key].subnets[each.value.subnet_key].id
-    private_ip_address_allocation = lookup(each.value, "private_ip_address_allocation", "Dynamic")
-    private_ip_address_version    = lookup(each.value, "private_ip_address_version", null)
-    private_ip_address            = lookup(each.value, "private_ip_address", null)
-    primary                       = lookup(each.value, "primary", null)
-    public_ip_address_id          = can(each.value.public_address_id) || can(try(each.value.public_ip_address.key, each.value.public_ip_address_key)) == false ? try(each.value.public_address_id, null) : var.public_ip_addresses[try(each.value.public_ip_address.lz_key, var.client_config.landingzone_key)][try(each.value.public_ip_address.key, each.value.public_ip_address_key)].id
-
-  }
-
   dynamic "ip_configuration" {
     for_each = try(each.value.ip_configurations, {})
 
