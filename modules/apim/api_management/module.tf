@@ -35,7 +35,8 @@ resource "azurerm_api_management" "apim" {
     }
   }
   dynamic "certificate" {
-    for_each = try(var.settings.certificate, null) != null ? [var.settings.certificate] : []
+    //for_each = try(var.settings.certificate, null) != null ? [var.settings.certificate] : []
+    for_each = try(var.settings.certificate, {})
 
     content {
 
