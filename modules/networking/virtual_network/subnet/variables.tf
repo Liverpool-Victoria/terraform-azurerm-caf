@@ -37,6 +37,12 @@ variable "service_endpoints" {
   #   error_message = "Possible values include: Microsoft.AzureActiveDirectory, Microsoft.AzureCosmosDB, Microsoft.ContainerRegistry, Microsoft.EventHub, Microsoft.KeyVault, Microsoft.ServiceBus, Microsoft.Sql, Microsoft.Storage and Microsoft.Web."
   # }
 }
+variable "private_endpoint_network_policies" {
+  description = "(Optional) to be able to select network security group or userdefined routes"
+  type        = string
+  default     = null
+  nullable    = true
+}
 
 variable "global_settings" {
   description = "Global settings object (see module README.md)"
