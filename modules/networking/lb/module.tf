@@ -14,23 +14,23 @@ resource "azurerm_lb" "lb" {
   resource_group_name = var.resource_group_name
   location            = var.location
 
-  frontend_ip_configuration {
-      name                                               = azurecaf_name.lb[each.key].result
-      gateway_load_balancer_frontend_ip_configuration_id = try(each.value.gateway_load_balancer_frontend_ip_configuration_id, null)
-      private_ip_address                                 = lookup(each.value, "private_ip_address", null)
-      private_ip_address_allocation                      = lookup(each.value, "private_ip_address_allocation", "Dynamic")
-      private_ip_address_version                         = lookup(each.value, "private_ip_address_version", null)
-      public_ip_prefix_id                                = try(each.value.public_ip_prefix_id, null)
-      zones                                              = can(each.value.zones) ? each.value.zones : try(each.value.availability_zone, null)
+  #frontend_ip_configuration {
+  #    name                                               = azurecaf_name.lb[each.key].result
+  #    gateway_load_balancer_frontend_ip_configuration_id = try(each.value.gateway_load_balancer_frontend_ip_configuration_id, null)
+  #    private_ip_address                                 = lookup(each.value, "private_ip_address", null)
+  #    private_ip_address_allocation                      = lookup(each.value, "private_ip_address_allocation", "Dynamic")
+  #    private_ip_address_version                         = lookup(each.value, "private_ip_address_version", null)
+  #    public_ip_prefix_id                                = try(each.value.public_ip_prefix_id, null)
+  #    zones                                              = can(each.value.zones) ? each.value.zones : try(each.value.availability_zone, null)
       # TODO: availability_zone kept for smooth migration to 3.0
 
-      public_ip_address_id = can(each.value.public_address_id) || can(try(each.value.public_ip_address.key, each.value.public_ip_address_key)) == false ? try(each.value.public_address_id, null) : var.public_ip_addresses[try(each.value.public_ip_address.lz_key, var.client_config.landingzone_key)][try(each.value.public_ip_address.key, each.value.public_ip_address_key)].id
-      subnet_id            = can(each.value.subnet_id) || can(each.value.vnet_key) == false ? try(each.value.subnet_id, var.virtual_subnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.subnet_key].id) : var.vnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.vnet_key].subnets[each.value.subnet_key].id
-     }
+  #    public_ip_address_id = can(each.value.public_address_id) || can(try(each.value.public_ip_address.key, each.value.public_ip_address_key)) == false ? try(each.value.public_address_id, null) : var.public_ip_addresses[try(each.value.public_ip_address.lz_key, var.client_config.landingzone_key)][try(each.value.public_ip_address.key, each.value.public_ip_address_key)].id
+  #    subnet_id            = can(each.value.subnet_id) || can(each.value.vnet_key) == false ? try(each.value.subnet_id, var.virtual_subnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.subnet_key].id) : var.vnets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.vnet_key].subnets[each.value.subnet_key].id
+  #   }
 
   dynamic "frontend_ip_configuration" {
     #for_each = try(var.settings.frontend_ip_configuration, null) != null ? [var.settings.frontend_ip_configuration] : []
-    for_each = try(var.settings.frontend_ip_configurations, [])
+    for_each = try(var.settings.frontend_ip_configuration, [])
     content {
       name                                               = try(frontend_ip_configuration.value.name, null)
       gateway_load_balancer_frontend_ip_configuration_id = try(frontend_ip_configuration.value.gateway_load_balancer_frontend_ip_configuration_id, null)
