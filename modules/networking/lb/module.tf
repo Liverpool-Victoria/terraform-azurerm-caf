@@ -29,7 +29,13 @@ resource "azurerm_lb" "lb" {
 
     dynamic "frontend_ip_configuration" {
     #for_each = try(var.settings.frontend_ip_configuration, null) != null ? [var.settings.frontend_ip_configuration] : []
-    for_each = try(var.settings.frontend_ip_configuration, [])
+    #for_each = try(var.settings.frontend_ip_configuration, [])
+     for_each = try(
+       # if user provided a list, use it
+       var.settings.frontend_ip_configurations,
+       # if user provided a single object, wrap it in a list
+       var.settings.frontend_ip_configuration != null ? [var.settings.frontend_ip_configuration] : []
+     )
     content {
       name                                               = try(frontend_ip_configuration.value.name, null)
       gateway_load_balancer_frontend_ip_configuration_id = try(frontend_ip_configuration.value.gateway_load_balancer_frontend_ip_configuration_id, null)
