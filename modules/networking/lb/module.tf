@@ -1,5 +1,4 @@
 ##local block need to be deleted###
-terraform
 locals {
   frontend_ip_configurations = length(try(var.settings.frontend_ip_configurations, [])) > 0 ?
     var.settings.frontend_ip_configurations :
