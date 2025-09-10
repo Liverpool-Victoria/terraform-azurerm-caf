@@ -1,3 +1,12 @@
+##local block need to be deleted###
+terraform
+locals {
+  frontend_ip_configurations = length(try(var.settings.frontend_ip_configurations, [])) > 0 ?
+    var.settings.frontend_ip_configurations :
+    (try(var.settings.frontend_ip_configuration, null) != null ? [var.settings.frontend_ip_configuration] : [])
+
+  frontend_ip_map = { for idx, cfg in local.frontend_ip_configurations : tostring(idx) => cfg }
+}
 
 
 resource "azurecaf_name" "lb" {
