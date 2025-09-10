@@ -48,7 +48,7 @@ resource "azurerm_lb" "lb" {
   }
 
 ##new changes###
-dynamic "frontend_ip_configurations" {
+dynamic "frontend_ip_configuration" {
     for_each = local.frontend_ip_map
     content {
       // ensure required name is never null
