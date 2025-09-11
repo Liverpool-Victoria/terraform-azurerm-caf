@@ -23,4 +23,7 @@ resource "azurerm_lb_rule" "lb" {
   load_distribution              = try(var.settings.load_distribution, null)
   disable_outbound_snat          = try(var.settings.disable_outbound_snat, null)
   enable_tcp_reset               = try(var.settings.enable_tcp_reset, null)
+  lifecycle {
+    ignore_changes = [loadbalancer_id]
+  }
 }
