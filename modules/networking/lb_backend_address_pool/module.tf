@@ -22,4 +22,7 @@ resource "azurerm_lb_backend_address_pool" "lb" {
       port       = try(tunnel_interface.value.port, null)
     }
   }
+  lifecycle {
+    ignore_changes = [loadbalancer_id]
+  }
 }
