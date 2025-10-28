@@ -17,4 +17,7 @@ resource "azurerm_lb_probe" "lb" {
   request_path        = try(var.settings.request_path, null)
   interval_in_seconds = try(var.settings.interval_in_seconds, null)
   number_of_probes    = try(var.settings.number_of_probes, null)
+  lifecycle {
+    ignore_changes = [loadbalancer_id]
+  }
 }
