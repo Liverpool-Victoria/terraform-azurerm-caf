@@ -14,4 +14,7 @@ resource "azurerm_lb_backend_address_pool_address" "lb" {
   ip_address              = var.settings.ip_address
   name                    = azurecaf_name.lb.result
   virtual_network_id      = can(var.settings.virtual_network.id) || can(var.settings.virtual_network.key) ? try(var.settings.virtual_network.id, var.remote_objects.virtual_network[try(var.settings.virtual_network.lz_key, var.client_config.landingzone_key)][var.settings.virtual_network.key].id) : null
+  lifecycle {
+    ignore_changes        = [backend_address_pool_id]
+  }
 }
