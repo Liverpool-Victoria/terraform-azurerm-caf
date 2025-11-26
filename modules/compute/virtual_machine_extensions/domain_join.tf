@@ -26,7 +26,8 @@ resource "azurerm_virtual_machine_extension" "domainjoin" {
   lifecycle {
     ignore_changes = [
       settings,
-      protected_settings
+      protected_settings,
+      tags
     ]
     precondition {
       condition = anytrue(
