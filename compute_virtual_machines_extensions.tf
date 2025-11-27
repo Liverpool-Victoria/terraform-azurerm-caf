@@ -52,6 +52,7 @@ module "vm_extension_microsoft_azure_domainjoin" {
   extension          = each.value.virtual_machine_extensions.microsoft_azure_domainjoin
   extension_name     = "microsoft_azure_domainJoin"
   keyvaults          = local.combined_objects_keyvaults
+  base_tags          = local.global_settings.inherit_tags
 }
 
 module "vm_extension_session_host_dscextension" {
