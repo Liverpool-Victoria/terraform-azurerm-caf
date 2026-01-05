@@ -19,6 +19,7 @@ resource "azurerm_eventhub_namespace" "evh" {
   dedicated_cluster_id     = try(var.settings.dedicated_cluster_id, null)
   maximum_throughput_units = try(var.settings.maximum_throughput_units, null)
   zone_redundant           = try(var.settings.zone_redundant, null)
+  public_network_access_enabled             = try(var.settings.public_network_access_enabled, null)
 
   dynamic "identity" {
     for_each = try(var.settings.identity, {})

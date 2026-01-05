@@ -85,7 +85,7 @@ locals {
             settings            = pe
             location            = local.resource_groups[pe.resource_group_key].location
             resource_group_name = local.resource_groups[pe.resource_group_key].name
-            subnet_id           = try(pe.vnet_key, null) == null ? null : try(local.combined_objects_networking[local.client_config.landingzone_key][pe.vnet_key].subnets[pe.subnet_key].id, local.combined_objects_networking[pe.lz_key][pe.vnet_key].subnets[pe.subnet_key].id)
+            subnet_id           = try(pe.subnet_id, null) != null ? pe.subnet_id : (try(pe.vnet_key, null) == null ? null : try(local.combined_objects_networking[local.client_config.landingzone_key][pe.vnet_key].subnets[pe.subnet_key].id, local.combined_objects_networking[pe.lz_key][pe.vnet_key].subnets[pe.subnet_key].id))
             tags                = module.event_hub_namespaces[eh_ns_key].tags
             base_tags           = local.global_settings.inherit_tags
           }
