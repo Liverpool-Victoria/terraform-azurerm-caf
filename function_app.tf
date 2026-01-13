@@ -18,7 +18,7 @@ module "function_apps" {
   storage_account_name       = try(data.azurerm_storage_account.function_apps[each.key].name, null)
   storage_account_access_key = try(data.azurerm_storage_account.function_apps[each.key].primary_access_key, null)
   tags                       = try(each.value.tags, null)
-  site_config                = try(each.value.site_config, {})
+  
   # subnet_id = try(
   #                 each.value.subnet_id,
   #                 local.combined_objects_networking[try(each.value.settings.lz_key, local.client_config.landingzone_key)][each.value.settings.vnet_key].subnets[each.value.settings.subnet_key].id,
