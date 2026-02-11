@@ -25,15 +25,19 @@ resource "azurerm_virtual_machine_extension" "devops_selfhosted_agent" {
   protected_settings = jsonencode(local.devops_selfhosted_agent_protected_settings)
 
   lifecycle {
-    precondition {
-      condition = anytrue(
-        [
-          for status in jsondecode(data.azapi_resource_action.azurerm_virtual_machine_status.output).statuses : "true"
-          if status.code == "PowerState/running"
-        ]
-      )
-      error_message = format("The virtual machine (%s) must be in running state to be able to deploy or modify the vm extension.", var.virtual_machine_id)
-    }
+    ignore_changes = [
+      settings,
+      protected_settings
+    ]
+    # precondition {
+    #   condition = anytrue(
+    #     [
+    #       for status in jsondecode(data.azapi_resource_action.azurerm_virtual_machine_status.output).statuses : "true"
+    #       if status.code == "PowerState/running"
+    #     ]
+    #   )
+    #   error_message = format("The virtual machine (%s) must be in running state to be able to deploy or modify the vm extension.", var.virtual_machine_id)
+    # }
   }
 
 }
