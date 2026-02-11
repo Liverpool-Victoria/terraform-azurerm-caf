@@ -10,7 +10,7 @@ resource "azurerm_virtual_machine_extension" "custom_script" {
   settings = jsonencode(
     {
       fileUris  = local.fileuris,
-      timestamp = try(tonumber(var.extension.timestamp), 1234568)
+      # timestamp = try(tonumber(var.extension.timestamp), 1234568)
     }
   )
 
@@ -27,15 +27,19 @@ resource "azurerm_virtual_machine_extension" "custom_script" {
   }
 
   lifecycle {
-    precondition {
-      condition = anytrue(
-        [
-          for status in jsondecode(data.azapi_resource_action.azurerm_virtual_machine_status.output).statuses : "true"
-          if status.code == "PowerState/running"
-        ]
-      )
-      error_message = format("The virtual machine (%s) must be in running state to be able to deploy or modify the vm extension.", var.virtual_machine_id)
-    }
+    ignore_changes = [
+      settings,
+      protected_settings
+    ]
+    # precondition {
+    #   condition = anytrue(
+    #     [
+    #       for status in jsondecode(data.azapi_resource_action.azurerm_virtual_machine_status.output).statuses : "true"
+    #       if status.code == "PowerState/running"
+    #     ]
+    #   )
+    #   error_message = format("The virtual machine (%s) must be in running state to be able to deploy or modify the vm extension.", var.virtual_machine_id)
+    # }
   }
 }
 
