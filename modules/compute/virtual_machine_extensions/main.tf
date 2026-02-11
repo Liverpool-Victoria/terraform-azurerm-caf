@@ -9,13 +9,13 @@ terraform {
   }
 }
 
-data "azapi_resource_action" "azurerm_virtual_machine_status" {
-  type                   = "Microsoft.Compute/virtualMachines@2022-11-01"
-  resource_id            = var.virtual_machine_id
-  action                 = "instanceView"
-  method                 = "GET"
-  response_export_values = ["statuses"]
-}
+# data "azapi_resource_action" "azurerm_virtual_machine_status" {
+#   type                   = "Microsoft.Compute/virtualMachines@2022-11-01"
+#   resource_id            = var.virtual_machine_id
+#   action                 = "instanceView"
+#   method                 = "GET"
+#   response_export_values = ["statuses"]
+# }
 
 data "azurecaf_environment_variable" "token" {
   count = can(var.extension.pats_from_env_variable.variable_name) ? 1 : 0
