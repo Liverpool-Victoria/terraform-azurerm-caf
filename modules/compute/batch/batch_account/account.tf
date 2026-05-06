@@ -36,6 +36,10 @@ resource "azurerm_batch_account" "account" {
     }
   }
 
+lifecycle {
+    ignore_changes = [key_vault_reference]
+  }
+
   # introduced in azurerm 2.99.0
   # dynamic "encryption" {
   #   for_each = try(var.key_vault_key_id, null) != null ? [var.key_vault_key_id] : []
