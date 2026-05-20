@@ -21,9 +21,10 @@ resource "azurerm_managed_disk" "disk" {
   disk_size_gb           = each.value.disk_size_gb
   zone                   = try(each.value.zone, each.value.zones[0], null)
   disk_iops_read_write   = try(each.value.disk_iops_read_write, null)
-  disk_mbps_read_write   = try(each.value.disk.disk_mbps_read_write, null)
+  disk_mbps_read_write   = try(each.value.disk_mbps_read_write, null)
   tags                   = merge(local.tags, try(each.value.tags, {}))
   disk_encryption_set_id = try(each.value.disk_encryption_set_key, null) == null ? null : var.disk_encryption_sets[try(each.value.lz_key, var.client_config.landingzone_key)][each.value.disk_encryption_set_key].id
+  source_resource_id     = try(each.value.source_resource_id, null) # using this we will be able to create the data disk by referencing a data disk.
 
   lifecycle {
     ignore_changes = [
