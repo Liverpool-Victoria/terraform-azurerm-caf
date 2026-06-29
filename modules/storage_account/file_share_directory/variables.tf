@@ -1,3 +1,6 @@
-variable "storage_account_name" {}
-variable "share_name" {}
+variable "storage_share_id" {
+  description = "The ID of the storage share."
+  type        = string
+}
+
 variable "settings" {}
