@@ -45,9 +45,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   default_node_pool {
     zones                         = try(var.settings.default_node_pool.zones, var.settings.default_node_pool.availability_zones, null)
-    enable_auto_scaling           = try(var.settings.default_node_pool.enable_auto_scaling, false)
-    enable_host_encryption        = try(var.settings.default_node_pool.enable_host_encryption, false)
-    enable_node_public_ip         = try(var.settings.default_node_pool.enable_node_public_ip, false)
+    auto_scaling_enabled     = try(var.settings.default_node_pool.auto_scaling_enabled, try(var.settings.default_node_pool.enable_auto_scaling, false))
+    host_encryption_enabled  = try(var.settings.default_node_pool.host_encryption_enabled, try(var.settings.default_node_pool.enable_host_encryption, false))
+    node_public_ip_enabled   = try(var.settings.default_node_pool.node_public_ip_enabled, try(var.settings.default_node_pool.enable_node_public_ip, false))
     fips_enabled                  = try(var.settings.default_node_pool.fips_enabled, null)
     kubelet_disk_type             = try(var.settings.default_node_pool.kubelet_disk_type, null)
     max_count                     = try(var.settings.default_node_pool.max_count, null)
@@ -484,9 +484,9 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
   capacity_reservation_group_id = try(each.value.capacity_reservation_group_id, null)
   custom_ca_trust_enabled       = try(each.value.custom_ca_trust_enabled, null)
   zones                         = try(each.value.zones, each.value.availability_zones, null)
-  enable_auto_scaling           = try(each.value.enable_auto_scaling, false)
-  enable_host_encryption        = try(each.value.enable_host_encryption, false)
-  enable_node_public_ip         = try(each.value.enable_node_public_ip, false)
+  auto_scaling_enabled    = try(each.value.auto_scaling_enabled, try(each.value.enable_auto_scaling, false))
+  host_encryption_enabled = try(each.value.host_encryption_enabled, try(each.value.enable_host_encryption, false))
+  node_public_ip_enabled  = try(each.value.node_public_ip_enabled, try(each.value.enable_node_public_ip, false))
   eviction_policy               = try(each.value.eviction_policy, null)
   host_group_id                 = try(each.value.host_group_id, null)
 
