@@ -460,7 +460,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
     for_each = try(var.settings.web_app_routing[*], {})
 
     content {
-      dns_zone_id = try(web_app_routing.value.dns_zone_id, null)
+      dns_zone_ids = try(
+        web_app_routing.value.dns_zone_ids,
+        try(web_app_routing.value.dns_zone_id, null) != null ? [web_app_routing.value.dns_zone_id] : []
+      )
+      default_nginx_controller = try(web_app_routing.value.default_nginx_controller, null)
     }
   }
 }
