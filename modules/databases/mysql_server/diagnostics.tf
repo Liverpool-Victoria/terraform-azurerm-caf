@@ -1,9 +1,2 @@
-module "diagnostics" {
-  source = "../../diagnostics"
-  count  = var.diagnostic_profiles == null ? 0 : 1
-
-  resource_id       = azurerm_mysql_server.mysql.id
-  resource_location = local.location
-  diagnostics       = var.diagnostics
-  profiles          = var.diagnostic_profiles
-}
+# Diagnostics for MySQL Single Server are not supported in azurerm provider 4.x.
+# Use azurerm_mysql_flexible_server with diagnostic settings instead.

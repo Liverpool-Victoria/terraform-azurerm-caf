@@ -1,12 +1,2 @@
-# Configuration
-#
-
-resource "azurerm_mysql_configuration" "mysql_configuration" {
-
-  for_each = var.settings.mysql_configurations
-
-  name                = each.value.name
-  resource_group_name = local.resource_group_name
-  server_name         = azurerm_mysql_server.mysql.name
-  value               = each.value.value
-}
+# azurerm_mysql_configuration was removed in azurerm provider 4.x.
+# Use azurerm_mysql_flexible_server_configuration instead.
