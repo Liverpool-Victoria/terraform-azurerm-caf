@@ -20,7 +20,7 @@ resource "azurerm_redis_cache" "redis" {
   sku_name            = var.redis.sku_name
   tags                = merge(local.tags, try(var.tags, null))
 
-  enable_non_ssl_port           = lookup(var.redis, "enable_non_ssl_port", null)
+  non_ssl_port_enabled          = lookup(var.redis, "non_ssl_port_enabled", lookup(var.redis, "enable_non_ssl_port", null))
   minimum_tls_version           = lookup(var.redis, "minimum_tls_version", "1.2")
   private_static_ip_address     = lookup(var.redis, "private_static_ip_address", null)
   public_network_access_enabled = lookup(var.redis, "public_network_access_enabled", null)
