@@ -38,7 +38,7 @@ resource "azurerm_redis_cache" "redis" {
       aof_backup_enabled              = lookup(redis_configuration.value, "aof_backup_enabled", null)
       aof_storage_connection_string_0 = lookup(redis_configuration.value, "aof_storage_connection_string_0", null)
       aof_storage_connection_string_1 = lookup(redis_configuration.value, "aof_storage_connection_string_1", null)
-      enable_authentication           = lookup(redis_configuration.value, "enable_authentication", null)
+      authentication_enabled          = lookup(redis_configuration.value, "authentication_enabled", lookup(redis_configuration.value, "enable_authentication", null))
       maxfragmentationmemory_reserved = lookup(redis_configuration.value, "maxfragmentationmemory_reserved", null)
       maxmemory_delta                 = lookup(redis_configuration.value, "maxmemory_delta", null)
       maxmemory_policy                = lookup(redis_configuration.value, "maxmemory_policy", null)
