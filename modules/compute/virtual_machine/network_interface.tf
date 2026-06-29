@@ -48,8 +48,8 @@ resource "azurerm_network_interface" "nic" {
   resource_group_name = local.resource_group_name
 
   dns_servers                   = lookup(each.value, "dns_servers", null)
-  enable_ip_forwarding          = lookup(each.value, "enable_ip_forwarding", false)
-  enable_accelerated_networking = lookup(each.value, "enable_accelerated_networking", false)
+  ip_forwarding_enabled          = lookup(each.value, "ip_forwarding_enabled", lookup(each.value, "enable_ip_forwarding", false))
+  accelerated_networking_enabled = lookup(each.value, "accelerated_networking_enabled", lookup(each.value, "enable_accelerated_networking", false))
   internal_dns_name_label       = lookup(each.value, "internal_dns_name_label", null)
   tags                          = merge(local.tags, try(each.value.tags, null))
 
