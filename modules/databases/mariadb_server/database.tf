@@ -1,11 +1,2 @@
-
-resource "azurerm_mariadb_database" "mariadb_database" {
-
-  for_each = var.settings.mariadb_database
-
-  name                = each.value.name
-  resource_group_name = local.resource_group_name
-  server_name         = azurerm_mariadb_server.mariadb.name
-  charset             = each.value.charset
-  collation           = each.value.collation
-}
+# azurerm_mariadb_database was removed in azurerm provider 4.x.
+# Use azurerm_mysql_flexible_database with azurerm_mysql_flexible_server instead.
