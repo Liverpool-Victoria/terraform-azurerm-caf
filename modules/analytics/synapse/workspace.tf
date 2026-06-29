@@ -28,16 +28,6 @@ resource "azurerm_synapse_workspace" "ws" {
     type = "SystemAssigned"
   }
 
-  dynamic "aad_admin" {
-    for_each = try(var.settings.aad_admin, null) != null ? [var.settings.aad_admin] : []
-
-    content {
-      login     = try(aad_admin.value.login, null)
-      object_id = try(aad_admin.value.object_id, null)
-      tenant_id = try(aad_admin.value.tenant_id, null)
-    }
-  }
-
   dynamic "azure_devops_repo" {
     for_each = try(var.settings.azure_devops_repo, null) != null ? [var.settings.azure_devops_repo] : []
 
@@ -73,6 +63,15 @@ resource "azurerm_synapse_workspace" "ws" {
     }
   }
 
+}
+
+resource "azurerm_synapse_workspace_aad_admin" "aad_admin" {
+  count = try(var.settings.aad_admin, null) != null ? 1 : 0
+
+  synapse_workspace_id = azurerm_synapse_workspace.ws.id
+  login                = var.settings.aad_admin.login
+  object_id            = var.settings.aad_admin.object_id
+  tenant_id            = coalesce(try(var.settings.aad_admin.tenant_id, null), var.client_config.tenant_id)
 }
 
 # Generate sql server random admin password if not provided in the attribute administrator_login_password
