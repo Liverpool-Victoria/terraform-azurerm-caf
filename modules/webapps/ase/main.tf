@@ -50,4 +50,9 @@ locals {
       value = local.tags
     }
   }
+
+  # azurerm_app_service_environment data source removed in azurerm 4.x
+  ase_id = lookup(azurerm_resource_group_template_deployment.ase.output_content, "id")
+  # Set settings.internal_ip_address when private DNS A records are required
+  ase_internal_ip_address = try(var.settings.internal_ip_address, null)
 }

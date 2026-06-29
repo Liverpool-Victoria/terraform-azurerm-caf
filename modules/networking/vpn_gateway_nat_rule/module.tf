@@ -1,7 +1,6 @@
 resource "azurerm_vpn_gateway_nat_rule" "vpn_gateway_nat_rule" {
-  name                = var.settings.name
-  resource_group_name = var.resource_group_name
-  vpn_gateway_id      = var.vpn_gateway_id
+  name           = var.settings.name
+  vpn_gateway_id = var.vpn_gateway_id
   ip_configuration_id = try(var.settings.ip_configuration_id, null)
 
   mode = var.settings.mode

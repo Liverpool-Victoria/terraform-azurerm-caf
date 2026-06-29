@@ -6,7 +6,7 @@ resource "azurerm_cosmosdb_gremlin_graph" "graph" {
   resource_group_name = var.resource_group_name
   account_name        = var.cosmosdb_account_name
   database_name       = var.gremlin_database_name
-  partition_key_path  = var.settings.partition_key_path
+  partition_key_paths = try(var.settings.partition_key_paths, [var.settings.partition_key_path])
 
   # Note : throughput & autoscaling are conflicting properties
   dynamic "autoscale_settings" {
