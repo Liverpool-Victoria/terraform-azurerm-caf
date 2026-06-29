@@ -390,15 +390,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     for_each = try(var.settings.role_based_access_control[*], {})
 
     content {
-      managed   = try(azure_active_directory_role_based_access_control.value.azure_active_directory.managed, true)
       tenant_id = try(azure_active_directory_role_based_access_control.value.azure_active_directory.tenant_id, null)
 
       azure_rbac_enabled     = try(azure_active_directory_role_based_access_control.value.enabled, true)
       admin_group_object_ids = try(azure_active_directory_role_based_access_control.value.azure_active_directory.admin_group_object_ids, try(var.admin_group_object_ids, null))
-
-      client_app_id     = try(azure_active_directory_role_based_access_control.value.azure_active_directory.client_app_id, null)
-      server_app_id     = try(azure_active_directory_role_based_access_control.value.azure_active_directory.server_app_id, null)
-      server_app_secret = try(azure_active_directory_role_based_access_control.value.azure_active_directory.server_app_secret, null)
 
     }
   }
