@@ -1,24 +1,24 @@
 output "id" {
-  value       = azurerm_integration_service_environment.ise.id
-  description = "The ID of the Integration Service Environment."
+  value       = null
+  description = "ISE is no longer supported by the AzureRM provider 4.x."
 }
 
 output "connector_endpoint_ip_addresses" {
-  value       = azurerm_integration_service_environment.ise.connector_endpoint_ip_addresses
-  description = "The list of access endpoint ip addresses of connector."
+  value       = []
+  description = "ISE is no longer supported by the AzureRM provider 4.x."
 }
 
 output "connector_outbound_ip_addresses" {
-  value       = azurerm_integration_service_environment.ise.connector_outbound_ip_addresses
-  description = "The list of outgoing ip addresses of connector."
+  value       = []
+  description = "ISE is no longer supported by the AzureRM provider 4.x."
 }
 
 output "workflow_endpoint_ip_addresses" {
-  value       = azurerm_integration_service_environment.ise.workflow_endpoint_ip_addresses
-  description = "The list of access endpoint ip addresses of workflow."
+  value       = []
+  description = "ISE is no longer supported by the AzureRM provider 4.x."
 }
 
 output "workflow_outbound_ip_addresses" {
-  value       = azurerm_integration_service_environment.ise.workflow_outbound_ip_addresses
-  description = "The list of outgoing ip addresses of workflow."
+  value       = []
+  description = "ISE is no longer supported by the AzureRM provider 4.x."
 }

@@ -13,4 +13,5 @@ locals {
     try(var.settings.tags, null)
   ) : try(var.settings.tags, null)
   resource_group_name = coalesce(var.resource_group_name, var.resource_group.name)
+  location            = coalesce(try(var.global_settings.regions[try(var.settings.region, null)], null), try(var.resource_group.location, null))
 }
