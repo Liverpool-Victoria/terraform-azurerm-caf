@@ -9,6 +9,14 @@ resource "azurecaf_name" "subnet" {
   use_slug      = var.global_settings.use_slug
 }
 
+locals {
+  private_endpoint_network_policies = coalesce(
+    try(var.private_endpoint_network_policies, null),
+    try(var.private_endpoint_network_policies_enabled, null) == true ? "Enabled" : null,
+    try(var.private_endpoint_network_policies_enabled, null) == false ? "Disabled" : null,
+  )
+}
+
 resource "azurerm_subnet" "subnet" {
 
   name                                          = azurecaf_name.subnet.result
@@ -16,9 +24,8 @@ resource "azurerm_subnet" "subnet" {
   virtual_network_name                          = var.virtual_network_name
   address_prefixes                              = var.address_prefixes
   service_endpoints                             = var.service_endpoints
-  private_endpoint_network_policies_enabled     = try(var.private_endpoint_network_policies_enabled, null)
+  private_endpoint_network_policies             = local.private_endpoint_network_policies
   private_link_service_network_policies_enabled = try(var.private_link_service_network_policies_enabled, null)
-  private_endpoint_network_policies             = try(var.private_endpoint_network_policies, null)
   dynamic "delegation" {
     for_each = try(var.settings.delegation, null) == null ? [] : [1]
 

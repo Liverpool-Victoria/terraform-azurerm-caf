@@ -13,7 +13,7 @@ variable "address_prefixes" {
   default     = []
 }
 variable "private_endpoint_network_policies_enabled" {
-  description = "(Optional) Enable or Disable network policies for the private endpoint on the subnet. Setting this to true will Enable the policy and setting this to false will Disable the policy. Defaults to true."
+  description = "(Optional) Deprecated bool mapped to private_endpoint_network_policies. true maps to Enabled, false maps to Disabled."
   nullable    = true
 }
 variable "private_link_service_network_policies_enabled" {

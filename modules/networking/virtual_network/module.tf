@@ -53,6 +53,7 @@ module "special_subnets" {
   private_endpoint_network_policies_enabled     = try(each.value.private_endpoint_network_policies_enabled, each.value.enforce_private_link_endpoint_network_policies, null)
   private_link_service_network_policies_enabled = try(each.value.private_link_service_network_policies_enabled, each.value.enforce_private_link_service_network_policies, null)
   settings                                      = each.value
+  private_endpoint_network_policies             = try(each.value.private_endpoint_network_policies, null)
 }
 
 module "subnets" {
