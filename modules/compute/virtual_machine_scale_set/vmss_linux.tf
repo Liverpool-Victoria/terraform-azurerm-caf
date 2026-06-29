@@ -82,7 +82,16 @@ resource "azurerm_linux_virtual_machine_scale_set" "vmss" {
   priority                        = try(each.value.priority, null)
   provision_vm_agent              = try(each.value.provision_vm_agent, true)
   proximity_placement_group_id    = can(each.value.proximity_placement_group_key) || can(each.value.proximity_placement_group.key) ? var.proximity_placement_groups[try(var.client_config.landingzone_key, var.client_config.landingzone_key)][try(each.value.proximity_placement_group_key, each.value.proximity_placement_group.key)].id : try(each.value.proximity_placement_group_id, each.value.proximity_placement_group.id, null)
-  scale_in_policy                 = try(each.value.scale_in_policy, null)
+
+  dynamic "scale_in" {
+    for_each = try(each.value.scale_in, null) != null ? [each.value.scale_in] : try(each.value.scale_in_policy, null) != null ? [{ rule = each.value.scale_in_policy }] : []
+
+    content {
+      rule                   = try(scale_in.value.rule, try(each.value.scale_in_policy, null))
+      force_deletion_enabled = try(scale_in.value.force_deletion_enabled, null)
+    }
+  }
+
   single_placement_group          = try(each.value.single_placement_group, null)
   upgrade_mode                    = try(each.value.upgrade_mode, null)
   zone_balance                    = try(each.value.zone_balance, null)
@@ -103,8 +112,8 @@ resource "azurerm_linux_virtual_machine_scale_set" "vmss" {
     content {
       name                          = azurecaf_name.linux_nic[network_interface.key].result
       primary                       = try(network_interface.value.primary, false)
-      enable_accelerated_networking = try(network_interface.value.enable_accelerated_networking, false)
-      enable_ip_forwarding          = try(network_interface.value.enable_ip_forwarding, false)
+      accelerated_networking_enabled = try(network_interface.value.accelerated_networking_enabled, try(network_interface.value.enable_accelerated_networking, false))
+      ip_forwarding_enabled          = try(network_interface.value.ip_forwarding_enabled, try(network_interface.value.enable_ip_forwarding, false))
       network_security_group_id     = try(network_interface.value.network_security_group_id, null)
 
       ip_configuration {
@@ -273,7 +282,16 @@ resource "azurerm_linux_virtual_machine_scale_set" "vmss_autoscaled" {
   priority                        = try(each.value.priority, null)
   provision_vm_agent              = try(each.value.provision_vm_agent, true)
   proximity_placement_group_id    = try(var.proximity_placement_groups[var.client_config.landingzone_key][each.value.proximity_placement_group_key].id, var.proximity_placement_groups[each.value.proximity_placement_groups].id, null)
-  scale_in_policy                 = try(each.value.scale_in_policy, null)
+
+  dynamic "scale_in" {
+    for_each = try(each.value.scale_in, null) != null ? [each.value.scale_in] : try(each.value.scale_in_policy, null) != null ? [{ rule = each.value.scale_in_policy }] : []
+
+    content {
+      rule                   = try(scale_in.value.rule, try(each.value.scale_in_policy, null))
+      force_deletion_enabled = try(scale_in.value.force_deletion_enabled, null)
+    }
+  }
+
   single_placement_group          = try(each.value.single_placement_group, null)
   upgrade_mode                    = try(each.value.upgrade_mode, null)
   zone_balance                    = try(each.value.zone_balance, null)
@@ -294,8 +312,8 @@ resource "azurerm_linux_virtual_machine_scale_set" "vmss_autoscaled" {
     content {
       name                          = azurecaf_name.linux_nic[network_interface.key].result
       primary                       = try(network_interface.value.primary, false)
-      enable_accelerated_networking = try(network_interface.value.enable_accelerated_networking, false)
-      enable_ip_forwarding          = try(network_interface.value.enable_ip_forwarding, false)
+      accelerated_networking_enabled = try(network_interface.value.accelerated_networking_enabled, try(network_interface.value.enable_accelerated_networking, false))
+      ip_forwarding_enabled          = try(network_interface.value.ip_forwarding_enabled, try(network_interface.value.enable_ip_forwarding, false))
       network_security_group_id     = try(network_interface.value.network_security_group_id, null)
 
       ip_configuration {
