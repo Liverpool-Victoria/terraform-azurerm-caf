@@ -5,10 +5,9 @@ variable "client_config" {
   description = "Client configuration object (see module README.md)."
 }
 variable "settings" {}
-variable "resource_group_name" {
-  description = "(Required) The name of the resource group where to create the resource."
+variable "primary_server_id" {
+  description = "The ID of the primary SQL Server."
   type        = string
 }
-variable "primary_server_name" {}
 variable "secondary_server_id" {}
 variable "databases" {}
