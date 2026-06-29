@@ -547,10 +547,9 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
     }
   }
 
-  fips_enabled       = try(each.value.fips_enabled, false)
-  kubelet_disk_type  = try(each.value.kubelet_disk_type, null)
-  max_pods           = try(each.value.max_pods, null)
-  message_of_the_day = try(each.value.message_of_the_day, null)
+  fips_enabled      = try(each.value.fips_enabled, false)
+  kubelet_disk_type = try(each.value.kubelet_disk_type, null)
+  max_pods          = try(each.value.max_pods, null)
 
   dynamic "node_network_profile" {
     for_each = try(var.settings.node_network_profile[*], {})
