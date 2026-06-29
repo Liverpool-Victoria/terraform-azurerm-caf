@@ -126,15 +126,6 @@ resource "azurerm_api_management" "apim" {
     }
   }
   notification_sender_email = try(var.settings.notification_sender_email, null)
-  dynamic "policy" {
-    for_each = try(var.settings.policy, null) != null ? [var.settings.policy] : []
-
-    content {
-
-      xml_content = try(policy.value.xml_content, null)
-      xml_link    = try(policy.value.xml_link, null)
-    }
-  }
   dynamic "protocols" {
     for_each = try(var.settings.protocols, null) != null ? [var.settings.protocols] : []
 
@@ -218,4 +209,12 @@ resource "azurerm_api_management" "apim" {
   }
   tags = merge(local.tags, try(var.settings.tags, {}))
 
+}
+
+resource "azurerm_api_management_policy" "policy" {
+  count = try(var.settings.policy, null) != null ? 1 : 0
+
+  api_management_id = azurerm_api_management.apim.id
+  xml_content       = try(var.settings.policy.xml_content, null)
+  xml_link          = try(var.settings.policy.xml_link, null)
 }
