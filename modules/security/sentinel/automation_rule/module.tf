@@ -30,13 +30,17 @@ resource "azurerm_sentinel_automation_rule" "automation_rule" {
     }
   }
 
-  dynamic "condition" {
-    for_each = try(var.settings.condition, {})
-
-    content {
-      operator = try(condition.value.operator, null)
-      property = try(condition.value.property, null)
-      values   = try(condition.value.values, null)
-    }
-  }
+  condition_json = try(
+    var.settings.condition_json,
+    length(try(var.settings.condition, {})) > 0 ? jsonencode([
+      for key, value in var.settings.condition : {
+        conditionType = "Property"
+        conditionProperties = {
+          propertyName   = value.property
+          operator       = value.operator
+          propertyValues = value.values
+        }
+      }
+    ]) : null
+  )
 }

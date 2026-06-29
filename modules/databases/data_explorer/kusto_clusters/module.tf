@@ -43,7 +43,21 @@ resource "azurerm_kusto_cluster" "kusto" {
       data_management_public_ip_id = try(virtual_network_configuration.value.data_management_public_ip.key, null) == null ? null : try(var.combined_resources.pips[try(virtual_network_configuration.value.data_management_public_ip.lz_key, var.client_config.landingzone_key)][virtual_network_configuration.value.data_management_public_ip.key].id, null)
     }
   }
-  language_extensions = try(var.settings.language_extensions, null)
+  dynamic "language_extensions" {
+    for_each = {
+      for idx, ext in try(var.settings.language_extensions, []) : idx => (
+        can(ext.name) ? ext : {
+          name  = ext
+          image = ext == "R" ? "R" : (ext == "PYTHON_3.10.8" || ext == "Python3_10_8") ? "Python3_10_8" : "Python3_6_5"
+        }
+      )
+    }
+
+    content {
+      name  = language_extensions.value.name
+      image = language_extensions.value.image
+    }
+  }
   dynamic "optimized_auto_scale" {
     for_each = try(var.settings.optimized_auto_scale, null) != null ? [var.settings.optimized_auto_scale] : []
 
@@ -54,7 +68,6 @@ resource "azurerm_kusto_cluster" "kusto" {
   }
   trusted_external_tenants      = try(var.settings.trusted_external_tenants, null)
   zones                         = try(var.settings.zones, null)
-  engine                        = try(var.settings.engine, null)
   auto_stop_enabled             = try(var.settings.auto_stop_enabled, null)
   public_network_access_enabled = try(var.settings.public_network_access_enabled, null)
   tags                          = local.tags

@@ -23,23 +23,23 @@ resource "azurerm_sentinel_alert_rule_scheduled" "scheduled" {
     }
   }
 
-  dynamic "incident_configuration" {
-    for_each = lookup(var.settings, "incident_configuration", {}) != {} ? [1] : []
+  dynamic "incident" {
+    for_each = lookup(var.settings, "incident", {}) != {} || lookup(var.settings, "incident_configuration", {}) != {} ? [merge(try(var.settings.incident, {}), try(var.settings.incident_configuration, {}))] : []
 
     content {
-      create_incident = lookup(var.settings.incident_configuration, "create_incident", null)
+      create_incident_enabled = try(incident.value.create_incident_enabled, incident.value.create_incident, null)
 
       dynamic "grouping" {
-        for_each = lookup(var.settings.incident_configuration, "grouping", {}) != {} ? [1] : []
+        for_each = [try(incident.value.grouping, {})]
 
         content {
-          enabled                 = lookup(var.settings.incident_configuration.grouping, "enabled", true)
-          lookback_duration       = lookup(var.settings.incident_configuration.grouping, "lookback_duration", "PT5M")
-          reopen_closed_incidents = lookup(var.settings.incident_configuration.grouping, "reopen_closed_incidents", false)
-          entity_matching_method  = lookup(var.settings.incident_configuration.grouping, "entity_matching_method", null)
-          group_by_entities       = lookup(var.settings.incident_configuration.grouping, "group_by_entities", null)
-          group_by_alert_details  = lookup(var.settings.incident_configuration.grouping, "group_by_alert_details", null)
-          group_by_custom_details = lookup(var.settings.incident_configuration.grouping, "group_by_custom_details", null)
+          enabled                 = try(grouping.value.enabled, true)
+          lookback_duration       = try(grouping.value.lookback_duration, "PT5M")
+          reopen_closed_incidents = try(grouping.value.reopen_closed_incidents, false)
+          entity_matching_method  = try(grouping.value.entity_matching_method, null)
+          by_entities             = try(grouping.value.by_entities, grouping.value.group_by_entities, null)
+          by_alert_details        = try(grouping.value.by_alert_details, grouping.value.group_by_alert_details, null)
+          by_custom_details       = try(grouping.value.by_custom_details, grouping.value.group_by_custom_details, null)
         }
       }
     }
