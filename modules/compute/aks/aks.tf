@@ -266,6 +266,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
 
 
+  image_cleaner_enabled = try(var.settings.image_cleaner_enabled, true)
+  image_cleaner_interval_hours = try(var.settings.image_cleaner_enabled, true) ? try(var.settings.image_cleaner_interval_hours, 48) : null
+
   dynamic "kubelet_identity" {
     for_each = try(var.settings.kubelet_identity, null) == null ? [] : [1]
     content {
