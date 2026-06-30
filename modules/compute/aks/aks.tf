@@ -417,7 +417,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   lifecycle {
     ignore_changes = [
-      windows_profile, private_dns_zone_id
+      windows_profile,
+      private_dns_zone_id,
+      image_cleaner_interval_hours,
     ]
   }
   tags = merge(local.tags, lookup(var.settings, "tags", {}))
