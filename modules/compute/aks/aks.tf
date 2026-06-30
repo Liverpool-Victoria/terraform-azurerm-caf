@@ -574,6 +574,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
   orchestrator_version     = try(each.value.orchestrator_version, try(var.settings.kubernetes_version, null))
   os_disk_size_gb          = try(each.value.os_disk_size_gb, null)
   os_disk_type             = try(each.value.os_disk_type, null)
+  temporary_name_for_rotation = try(each.value.temporary_name_for_rotation, null)
   pod_subnet_id            = can(each.value.pod_subnet_key) == false || can(each.value.pod_subnet.key) == false || can(each.value.pod_subnet_id) || can(each.value.pod_subnet.resource_id) ? try(each.value.pod_subnet_id, each.value.pod_subnet.resource_id, null) : var.vnets[try(var.settings.lz_key, var.client_config.landingzone_key)][var.settings.vnet_key].subnets[try(each.value.pod_subnet.key, each.value.pod_subnet_key)].id
 
   os_sku                       = try(each.value.os_sku, null)
