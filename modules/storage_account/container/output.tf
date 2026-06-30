@@ -10,12 +10,12 @@ output "name" {
 
 output "resource_manager_id" {
   description = "The Resource Manager ID of this Storage Container."
-  value       = azurerm_storage_container.stg.resource_manager_id
+  value       = azurerm_storage_container.stg.id
 }
 
 output "id" {
   description = "The Resource Manager ID of this Storage Container. Used by role_mapping"
-  value       = azurerm_storage_container.stg.resource_manager_id
+  value       = azurerm_storage_container.stg.id
 }
 
 output "url" {

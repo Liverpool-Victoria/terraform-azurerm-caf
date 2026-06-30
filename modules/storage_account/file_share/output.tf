@@ -1,7 +1,7 @@
 output "id" {
   description = "The ID of the File Share"
   # map it to the resource manager id to be compatible with RBAC role_mapping
-  value = azurerm_storage_share.fs.resource_manager_id
+  value = azurerm_storage_share.fs.id
 }
 
 output "name" {
@@ -16,7 +16,7 @@ output "url" {
 
 output "resource_manager_id" {
   description = "The Resource Manager ID of this File Share"
-  value       = azurerm_storage_share.fs.resource_manager_id
+  value       = azurerm_storage_share.fs.id
 }
 
 output "file_share_directories" {

@@ -101,8 +101,8 @@ resource "azurerm_windows_virtual_machine_scale_set" "vmss" {
     content {
       name                          = azurecaf_name.windows_nic[network_interface.key].result
       primary                       = try(network_interface.value.primary, false)
-      accelerated_networking_enabled = try(network_interface.value.accelerated_networking_enabled, try(network_interface.value.enable_accelerated_networking, false))
-      ip_forwarding_enabled          = try(network_interface.value.ip_forwarding_enabled, try(network_interface.value.enable_ip_forwarding, false))
+      enable_accelerated_networking = try(network_interface.value.enable_accelerated_networking, try(network_interface.value.accelerated_networking_enabled, false))
+      enable_ip_forwarding          = try(network_interface.value.enable_ip_forwarding, try(network_interface.value.ip_forwarding_enabled, false))
       network_security_group_id     = try(network_interface.value.network_security_group_id, null)
 
       ip_configuration {

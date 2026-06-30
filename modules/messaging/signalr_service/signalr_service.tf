@@ -15,11 +15,17 @@ resource "azurerm_signalr_service" "signalr_service" {
   resource_group_name = local.resource_group_name
   tags                = merge(local.base_tags, try(var.settings.tags, {}))
 
-  # Shows in documentation but error shows not supported during plan/apply
-  connectivity_logs_enabled = try(var.settings.connectivity_logs_enabled, null)
-  messaging_logs_enabled    = try(var.settings.messaging_logs_enabled, null)
-  service_mode              = try(var.settings.service_mode, null)
-  live_trace_enabled        = try(var.settings.live_trace_enabled, null)
+  service_mode = try(var.settings.service_mode, null)
+
+  dynamic "live_trace" {
+    for_each = try(var.settings.live_trace, null) != null || try(var.settings.live_trace_enabled, null) != null || try(var.settings.connectivity_logs_enabled, null) != null || try(var.settings.messaging_logs_enabled, null) != null ? [1] : []
+
+    content {
+      enabled                   = try(var.settings.live_trace.enabled, try(var.settings.live_trace_enabled, null))
+      connectivity_logs_enabled = try(var.settings.live_trace.connectivity_logs_enabled, try(var.settings.connectivity_logs_enabled, null))
+      messaging_logs_enabled    = try(var.settings.live_trace.messaging_logs_enabled, try(var.settings.messaging_logs_enabled, null))
+    }
+  }
 
   sku {
     name     = var.settings.sku.name
