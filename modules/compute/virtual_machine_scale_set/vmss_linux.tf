@@ -84,11 +84,11 @@ resource "azurerm_linux_virtual_machine_scale_set" "vmss" {
   proximity_placement_group_id    = can(each.value.proximity_placement_group_key) || can(each.value.proximity_placement_group.key) ? var.proximity_placement_groups[try(var.client_config.landingzone_key, var.client_config.landingzone_key)][try(each.value.proximity_placement_group_key, each.value.proximity_placement_group.key)].id : try(each.value.proximity_placement_group_id, each.value.proximity_placement_group.id, null)
 
   dynamic "scale_in" {
-    for_each = try(each.value.scale_in, null) != null ? [each.value.scale_in] : try(each.value.scale_in_policy, null) != null ? [{ rule = each.value.scale_in_policy }] : []
+    for_each = [1]
 
     content {
-      rule                   = try(scale_in.value.rule, try(each.value.scale_in_policy, null))
-      force_deletion_enabled = try(scale_in.value.force_deletion_enabled, null)
+      rule                   = try(each.value.scale_in.rule, try(each.value.scale_in_policy, "Default"))
+      force_deletion_enabled = try(each.value.scale_in.force_deletion_enabled, false)
     }
   }
 
@@ -284,11 +284,11 @@ resource "azurerm_linux_virtual_machine_scale_set" "vmss_autoscaled" {
   proximity_placement_group_id    = try(var.proximity_placement_groups[var.client_config.landingzone_key][each.value.proximity_placement_group_key].id, var.proximity_placement_groups[each.value.proximity_placement_groups].id, null)
 
   dynamic "scale_in" {
-    for_each = try(each.value.scale_in, null) != null ? [each.value.scale_in] : try(each.value.scale_in_policy, null) != null ? [{ rule = each.value.scale_in_policy }] : []
+    for_each = [1]
 
     content {
-      rule                   = try(scale_in.value.rule, try(each.value.scale_in_policy, null))
-      force_deletion_enabled = try(scale_in.value.force_deletion_enabled, null)
+      rule                   = try(each.value.scale_in.rule, try(each.value.scale_in_policy, "Default"))
+      force_deletion_enabled = try(each.value.scale_in.force_deletion_enabled, false)
     }
   }
 
