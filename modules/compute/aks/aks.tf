@@ -74,9 +74,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
     vnet_subnet_id = can(var.settings.default_node_pool.vnet_subnet_id) || can(var.settings.default_node_pool.subnet.resource_id) ? try(var.settings.default_node_pool.vnet_subnet_id, var.settings.default_node_pool.subnet.resource_id) : var.vnets[try(var.settings.vnet.lz_key, var.settings.lz_key, var.client_config.landingzone_key)][try(var.settings.vnet.key, var.settings.vnet_key)].subnets[try(var.settings.default_node_pool.subnet_key, var.settings.default_node_pool.subnet.key)].id
 
     dynamic "upgrade_settings" {
-      for_each = try(var.settings.default_node_pool.upgrade_settings, null) == null ? [] : [1]
+      for_each = [1]
+
       content {
-        max_surge = var.settings.default_node_pool.upgrade_settings.max_surge
+        max_surge                     = try(var.settings.default_node_pool.upgrade_settings.max_surge, "10%")
+        drain_timeout_in_minutes      = try(var.settings.default_node_pool.upgrade_settings.drain_timeout_in_minutes, 0)
+        node_soak_duration_in_minutes = try(var.settings.default_node_pool.upgrade_settings.node_soak_duration_in_minutes, 0)
       }
     }
 
@@ -577,9 +580,12 @@ resource "azurerm_kubernetes_cluster_node_pool" "nodepools" {
   scale_down_mode              = try(each.value.scale_down_mode, null)
   ultra_ssd_enabled            = try(each.value.ultra_ssd_enabled, false)
   dynamic "upgrade_settings" {
-    for_each = try(each.value.upgrade_settings, null) == null ? [] : [1]
+    for_each = [1]
+
     content {
-      max_surge = upgrade_settings.value.max_surge
+      max_surge                     = try(each.value.upgrade_settings.max_surge, "10%")
+      drain_timeout_in_minutes      = try(each.value.upgrade_settings.drain_timeout_in_minutes, 0)
+      node_soak_duration_in_minutes = try(each.value.upgrade_settings.node_soak_duration_in_minutes, 0)
     }
   }
 
