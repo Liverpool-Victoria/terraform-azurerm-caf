@@ -52,7 +52,7 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
   }
 
   lifecycle {
-    ignore_changes = [virtual_network_gateway_id, authorization_key]
+    ignore_changes = [virtual_network_gateway_id, authorization_key, express_route_circuit_id]
   }
 
 }
