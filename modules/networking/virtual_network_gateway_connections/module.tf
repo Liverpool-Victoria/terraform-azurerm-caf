@@ -63,8 +63,8 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
 }
 
 data "azurerm_key_vault_secret" "shared_key" {
-  count = var.key_vault_id != null && try(var.settings.shared_key_secret_name, null) != null ? 1 : 0
+  count = var.keyvault_id != null && try(var.settings.shared_key_secret_name, null) != null ? 1 : 0
 
   name         = var.settings.shared_key_secret_name
-  key_vault_id = var.key_vault_id
+  key_vault_id = var.keyvault_id
 }
