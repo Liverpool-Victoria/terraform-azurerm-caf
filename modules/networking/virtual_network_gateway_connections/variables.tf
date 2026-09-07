@@ -22,6 +22,12 @@ variable "express_route_circuit_id" {}
 variable "authorization_key" {}
 variable "virtual_network_gateway_id" {}
 variable "local_network_gateway_id" {}
+variable "keyvault_id" {
+  default = null
+}
+variable "keyvaults" {
+  default = {}
+}
 
 
 
