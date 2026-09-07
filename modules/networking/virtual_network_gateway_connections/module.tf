@@ -23,8 +23,13 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
   # The following arguments are applicable only if the type is IPsec (VPN)
   connection_protocol                = try(var.settings.connection_method, null)
   dpd_timeout_seconds                = try(var.settings.dpd_timeout_seconds, null)                                                      
-  shared_key                         = try(base64decode(var.settings.shared_key), null) # To decode the encoded shared key.
+  #shared_key                         = try(base64decode(var.settings.shared_key), null) # To decode the encoded shared key.
   #shared_key                        = try(var.settings.shared_key, null)
+  shared_key = (
+  try(var.settings.shared_key_secret_name, null) != null
+  ? data.azurerm_key_vault_secret.shared_key[0].value
+  : try(var.settings.shared_key, null)
+  )
   enable_bgp                         = try(var.settings.enable_bgp, null)
   local_network_gateway_id           = try(var.local_network_gateway_id, null)
   routing_weight                     = try(var.settings.routing_weight, null)
@@ -55,4 +60,11 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
     ignore_changes = [virtual_network_gateway_id, authorization_key]
   }
 
+}
+
+data "azurerm_key_vault_secret" "shared_key" {
+  count = var.key_vault_id != null && try(var.settings.shared_key_secret_name, null) != null ? 1 : 0
+
+  name         = var.settings.shared_key_secret_name
+  key_vault_id = var.key_vault_id
 }
