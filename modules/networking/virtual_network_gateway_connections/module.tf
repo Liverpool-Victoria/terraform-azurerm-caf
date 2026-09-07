@@ -25,11 +25,7 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
   dpd_timeout_seconds                = try(var.settings.dpd_timeout_seconds, null)                                                      
   #shared_key                         = try(base64decode(var.settings.shared_key), null) # To decode the encoded shared key.
   #shared_key                        = try(var.settings.shared_key, null)
-  shared_key = (
-  try(var.settings.shared_key_secret_name, null) != null
-  ? data.azurerm_key_vault_secret.shared_key[0].value
-  : try(var.settings.shared_key, null)
-  )
+  shared_key = data.azurerm_key_vault_secret.shared_key.value
   enable_bgp                         = try(var.settings.enable_bgp, null)
   local_network_gateway_id           = try(var.local_network_gateway_id, null)
   routing_weight                     = try(var.settings.routing_weight, null)
@@ -63,8 +59,7 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
 }
 
 data "azurerm_key_vault_secret" "shared_key" {
-  count = var.keyvault_id != null && try(var.settings.shared_key_secret_name, null) != null ? 1 : 0
 
   name         = var.settings.shared_key_secret_name
-  key_vault_id = var.keyvault_id
+  keyvault_id = var.keyvault_id
 }
