@@ -26,7 +26,12 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
   #shared_key                         = try(base64decode(var.settings.shared_key), null) # To decode the encoded shared key.
   #shared_key                        = try(var.settings.shared_key, null)
   #shared_key = data.azurerm_key_vault_secret.shared_key.value
-  shared_key                         = data.azurerm_key_vault_secret.shared_key.value
+  #shared_key                         = data.azurerm_key_vault_secret.shared_key.value
+  shared_key = (
+  try(var.settings.shared_key_secret_name, null) != null
+  ? data.azurerm_key_vault_secret.shared_key[0].value
+  : try(var.settings.shared_key, null)
+  )
   enable_bgp                         = try(var.settings.enable_bgp, null)
   local_network_gateway_id           = try(var.local_network_gateway_id, null)
   routing_weight                     = try(var.settings.routing_weight, null)
