@@ -61,7 +61,7 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
 
 data "azurerm_key_vault_secret" "shared_key" {
 
-  name         = var.settings.shared_key_secret_name
+  name         = var.settings.shared_key_secret_name.value
   key_vault_id = var.key_vault_id
 }
 #data "azurerm_key_vault_secret" "shared_key" {
