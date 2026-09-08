@@ -59,15 +59,15 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
 
 }
 
-#data "azurerm_key_vault_secret" "shared_key" {
-
-#  name         = var.settings.shared_key_secret_name
-#  key_vault_id = var.key_vault_id
-#}
 data "azurerm_key_vault_secret" "shared_key" {
-  name     = var.shared_key_secret_name.secret_name
-  key_vault_id = try(
-    var.shared_key_secret_name.key_vault_id,
-    try(var.keyvaults[shared_key_secret_name.lz_key][var.shared_key_secret_name.keyvault_key].id, var.keyvaults[var.client_config.landingzone_key][var.shared_key_secret_name.keyvault_key].id)
-  )
+
+  name         = var.settings.shared_key_secret_name
+  key_vault_id = var.key_vault_id
 }
+#data "azurerm_key_vault_secret" "shared_key" {
+#  name     = var.shared_key_secret_name.secret_name
+#  key_vault_id = try(
+#    var.shared_key_secret_name.key_vault_id,
+#    try(var.keyvaults[shared_key_secret_name.lz_key][var.shared_key_secret_name.keyvault_key].id, var.keyvaults[var.client_config.landingzone_key][var.shared_key_secret_name.keyvault_key].id)
+#  )
+#}
