@@ -13,7 +13,8 @@ module "vpn_gateway_connections" {
   depends_on = [module.virtual_wans, module.vpn_sites, module.virtual_hubs]
   source     = "./modules/networking/vpn_gateway_connection"
   for_each   = local.networking.vpn_gateway_connections
-
+  
+  key_vault_id    = module.key_vault.key_vault_id
   settings        = each.value
   global_settings = local.global_settings
   client_config   = local.client_config
