@@ -29,7 +29,7 @@ resource "azurerm_virtual_network_gateway_connection" "vngw_connection" {
   #shared_key                         = data.azurerm_key_vault_secret.shared_key.value
   shared_key = (
   try(var.settings.shared_key_secret_name, null) != null
-  ? data.azurerm_key_vault_secret.shared_key[0].value
+  ? data.azurerm_key_vault_secret.shared_key.value
   : try(var.settings.shared_key, null)
   )
   enable_bgp                         = try(var.settings.enable_bgp, null)
